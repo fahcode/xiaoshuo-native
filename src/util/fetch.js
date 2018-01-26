@@ -4,8 +4,9 @@
  * 网络请求
  */
 //接口域名
-const host="http://45.124.67.223:3888/";
-//const host="http://192.168.140.56:3888/";
+//const host="http://45.124.67.223:3888/";
+//const host="http://112.74.33.167:3888/";
+const host="http://192.168.140.56:3888/";
 //const host="http://192.168.1.111:3888/";
 //接口URL集合
 const urls={
@@ -26,6 +27,7 @@ const urls={
     login         : 'login',//登陆
     logOut        : 'logOut',//退出登陆
     sendSms       : 'sendSmsCode',//发生短信
+    updateCase      : 'updateCase',//更新书架
 };
 
 function Fetch(options){
@@ -47,6 +49,7 @@ function Fetch(options){
         sendUrl=new Request(host+urls[options.url]);//构造请求资源
     }
     console.log(sendUrl);
+    console.log(sendHeader);
 
     fetch(sendUrl,sendHeader).then(function(res) {
         if (res.ok) {
@@ -103,15 +106,16 @@ function Fetch(options){
 function sortKey(data,type){
     let tempData='';
     let i = 0;
-    for(let key in data){
-        i++;
-        //上传文件无需KEY
-        if(type === "multipart/form-data"){
-            tempData=data[key];
-        } else {
+    //上传文件无需KEY
+    if(type === "multipart/form-data" || type === "application/json"){
+        tempData = data;
+    }else{
+        for(let key in data){
+            i++;
             tempData+= (i==1?'':'&') +key+'='+data[key];
+            
         }
-    }
+    };
     return tempData;
 }
 

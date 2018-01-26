@@ -31,6 +31,10 @@ class DrawerPage extends Component {
             let arr = [];
             for(let i=0;i<users.length;i++){
                 let narr = users[i];
+                delete narr.pageList;
+                delete narr.authorBooks;
+                delete narr.commentCon;
+                console.log(narr)
                 //如果不是书架内容,直接删除内容
                 if(narr.isAdd){
                     arr.push(narr)
