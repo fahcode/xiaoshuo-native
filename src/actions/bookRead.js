@@ -17,7 +17,7 @@ export function handle(data){
 }
 
 //获取章节内容
-export function getBookDetails(options, data){
+export function getBookDetails(options, listdata){
     return dispatch => {
         dispatch(handle({
             content: "",
@@ -26,19 +26,17 @@ export function getBookDetails(options, data){
 
         storage.load({
             key: 'bookInfo',
-            id: options.id,
+            id: options.bid,
         }).then(ret => {
 
             ///查询是否有内容
             let tpage = ret.pageList[options.rdPst-1];
-            console.log(options.rdPst)
-            console.log(tpage)
 
             // 如果找到数据，则在then方法中返回
             dispatch(handle({
                 bookName: ret.name,
                 title: tpage.name,
-                bookId: options.id,
+                bookId: options.bid,
                 isAdd: ret.isAdd,
                 chapter: options.rdPst,
                 ptotal: ret.ptotal,
@@ -64,7 +62,7 @@ export function getBookDetails(options, data){
                 //保存
                 storage.save({
                     key: "bookInfo",
-                    id: options.id,  
+                    id: options.bid,  
                     data: now
                 });
 
@@ -97,7 +95,7 @@ export function getBookDetails(options, data){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: options.id,  
+                                id: options.bid,  
                                 data: now
                             });
                             //更新在读书籍和书架的视图, 主要是修改阅读的进度
@@ -127,19 +125,19 @@ export function getBookDetails(options, data){
             //////没查询到书籍，代表未加入书架,已经废弃，使用临时保存逻辑
             if(err.name != "NotFoundError"){ alert(err.message); return false;}
 
-            let tpage = data.pageList[data.rdPst-1];
+            let tpage = listdata[options.rdPst-1];
             Fetch({
                     url:"bookDetails",
                     type:"GET",
                     //link和charset都单独记录在列表的每一条
-                    data: {name: data.name, link: tpage.link, sourceType: data.sourceTydatae, charset: tpage.charset},
+                    data: {name: "", link: tpage.link, sourceType: options.sourceType, charset: tpage.charset},
                     success:function(result){
                         if(result.status==1){
                             
                             dispatch(handle({
                                 content: result.data,
-                                chapter: data.rdPst,
-                                ptotal: data.ptotal,
+                                chapter: options.rdPst,
+                                ptotal: listdata.length.ptotal,
                                 title: tpage.name,
                                 loading: false
                             }));
@@ -164,17 +162,16 @@ export function getBookDetails(options, data){
 }
 
 //缓存下载
-export function downBook(id, startPost, endPost){
+export function downBook(bid, startPost, endPost){
     console.log(startPost)
     console.log(endPost)
     return dispatch => {
         /*dispatch(handle({
             loading: true
         }))*/
-
         storage.load({
             key: 'bookInfo',
-            id: id,
+            id: bid,
         }).then(ret => {
             let tpage = ret.pageList[0];
 
@@ -221,7 +218,7 @@ export function downBook(id, startPost, endPost){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: id,  
+                                id: bid,  
                                 data: ret
                             });
 
@@ -264,7 +261,7 @@ export function downBook(id, startPost, endPost){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: id,  
+                                id: bid,  
                                 data: now
                             });
                             

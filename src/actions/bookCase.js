@@ -19,6 +19,7 @@ export function getBookCase(noDele){
     return dispatch => {
         // 获取某个key下的所有数据(仅key-id数据)
         storage.getAllDataForKey('bookInfo').then(users => {
+            console.log(users)
             let arr = [];
             for(let i=0;i<users.length;i++){
                 //如果不是书架内容,直接删除内容
@@ -29,7 +30,7 @@ export function getBookCase(noDele){
                     //////删除残留的临时书籍
                     storage.remove({
                         key: 'bookInfo',
-                        id: users[i].id
+                        id: users[i].bid
                     });
                 }
             }
@@ -52,6 +53,7 @@ export function updataBookCase(){
         // 获取某个key下的所有数据(仅key-id数据)
         storage.getAllDataForKey('bookInfo').then(users => {
             let ids = [],
+                qidianids = [],
                 names = [],
                 sourceTypes = [],
                 listLinks = [],
@@ -61,7 +63,8 @@ export function updataBookCase(){
                 let nowd = users[i];
                 if(nowd.isAdd){
                     ////先搜索起点更新信息，不能使用异步，使用只能做发起单一请求了
-                    ids.push(nowd.id);
+                    ids.push(nowd.bid);
+                    qidianids.push(nowd.qidianid);
                     names.push(nowd.name);
                     sourceTypes.push(nowd.sourceType);
                     listLinks.push(encodeURIComponent(nowd.listLink));
@@ -71,11 +74,11 @@ export function updataBookCase(){
             Fetch({
                     url: 'updataBookList',
                     type:"POST",
-                    data: {ids: ids, names: names, sourceTypes: sourceTypes, listLinks: listLinks, charsets: charsets},
+                    data: {ids: ids, qidianids: qidianids, names: names, sourceTypes: sourceTypes, listLinks: listLinks, charsets: charsets},
                     success:function(result){
                         if(result.status==1){
                             let dds = result.data;
-                            console.log(dds);
+                            console.log(JSON.stringify(dds));
                             ////////循环保存
                             for(let j =0;j<dds.length;j++){
                                 let nd = dds[j],
@@ -85,7 +88,7 @@ export function updataBookCase(){
                                     //////先找对应的数据，再使用合并
                                     storage.load({
                                         key: 'bookInfo',
-                                        id: d_result.fid
+                                        id: d_result.bid
                                     }).then(ret => {
                                         //列表不改变，删除pageList，不合并保存这个值
                                         if(ret.pageList.length==d_result.pageList.length){
@@ -95,7 +98,7 @@ export function updataBookCase(){
                                         let adds = Object.assign({}, ret, d_result);
                                         storage.save({
                                             key: "bookInfo",
-                                            id: d_result.fid,  
+                                            id: d_result.bid,  
                                             data: adds
                                         });
                                     }).catch(err => {
@@ -124,7 +127,7 @@ export function delectBook(options, tag){
         // 删除单个数据
         storage.remove({
             key: 'bookInfo',
-            id: options.id
+            id: options.bid
         });
         /////设置书架更新
         dispatch( handle({isUpView:true}) )

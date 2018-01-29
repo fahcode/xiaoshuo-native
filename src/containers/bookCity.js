@@ -100,7 +100,7 @@ class Main extends Component {
        })
     }
 
-    _keyExtractor = (item, index) => item.id+index;
+    _keyExtractor = (item, index) => item.qidianid+index;
 
    _renderItem = ({item})=>{
         //判断是否是标题
@@ -116,7 +116,7 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=>{this._bookInfo(item)} }
             >
-                <View key={item.id}  style={styles.bookView}>
+                <View key={item.qidianid}  style={styles.bookView}>
                     <View style={styles.leftImg}>
                         <Text style={styles.bookType} numberOfLines={1}>{item.btype}</Text>
                     </View>

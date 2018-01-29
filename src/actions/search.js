@@ -99,40 +99,34 @@ export function searchOne(options){
 export function addBook(options, tag, isGetInfo){
     
     return dispatch => {
-        storage.load({
-            key: 'bookInfo',
-            id: options.id
-        }).then(old => {
-            if(old.isAdd){
-                alert('书架已经有这本书了！');
-                return false;
-            }else{
-                //////在临时数据里面
-                saveBook(old)
+        storage.getAllDataForKey('bookInfo').then(ret => {
+            for(let x in ret){
+                if(ret[x].qidianid == options.qidianid){
+                    alert('书架已经有这本书了！');
+                    return false;
+                }    
             }
-            
+            //添加书架
+            saveBook(options);
         }).catch(err => {
-            //////不在临时数据里面
-            if(err.name == "NotFoundError") {
-                saveBook(options)
-                /////添加搜索数据到书架后 就直接去获取详细的数据
-                getInfo(options);
-            }else{
-                console.log(err)
-            }
-                     
+            console.log(err)      
         });
 
         function saveBook(data){
+            let bid = new Date().getTime(); ////获取唯一时间戳
             let nowData  = data;
+                nowData.bid = bid;
                 nowData.isAdd = true;
-                nowData.addDate = new Date().getTime();
+                nowData.addTime = new Date().getTime();
                 nowData.readTime = new Date().getTime();
             ////保存单独一本书
             storage.save({
                 key: "bookInfo",
-                id: options.id,  
+                id: bid,  
                 data: nowData
+            }).then(()=>{
+                /////添加搜索数据到书架后 就直接去获取详细的数据
+                getInfo(options);
             });
             /////设置书架更新
             dispatch( bookCase.handle({isUpView:true}) )
@@ -146,7 +140,7 @@ export function addBook(options, tag, isGetInfo){
             Fetch({
                 url:"bookInfo",
                 type:"GET",
-                data: {id: options.id, authorId: options.authorId},
+                data: {qidianid: options.qidianid, authorId: options.authorId},
                 success: function(result){
                     console.log('详细的'+result.data)
                     if(result.status==1){
@@ -157,7 +151,7 @@ export function addBook(options, tag, isGetInfo){
                         //保存
                         storage.save({
                             key: "bookInfo",
-                            id: options.id,  
+                            id: options.bid,  
                             data: dd
                         });
 

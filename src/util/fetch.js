@@ -5,8 +5,8 @@
  */
 //接口域名
 //const host="http://45.124.67.223:3888/";
-//const host="http://112.74.33.167:3888/";
-const host="http://192.168.140.56:3888/";
+const host="http://112.74.33.167:3888/";
+//const host="http://192.168.140.56:3888/";
 //const host="http://192.168.1.111:3888/";
 //接口URL集合
 const urls={
@@ -27,7 +27,8 @@ const urls={
     login         : 'login',//登陆
     logOut        : 'logOut',//退出登陆
     sendSms       : 'sendSmsCode',//发生短信
-    updateCase      : 'updateCase',//更新书架
+    updateCase      : 'updateCase',//上传书架
+    dldateCase      : 'dldateCase',//下载书架
 };
 
 function Fetch(options){

@@ -348,6 +348,7 @@ class Main extends Component {
     }
     //下载
     dlContent=(type)=>{
+        let params = this.props.navigation.state.params;
         //隐藏
         this.props._handle({
             showPop: false,
@@ -358,10 +359,10 @@ class Main extends Component {
             let endPost = type=="after"? this.props.bookRead.ptotal: (this.props.bookRead.chapter+51);
             if(endPost>this.props.bookRead.ptotal) endPost = this.props.bookRead.ptotal;
 
-            this.props._downBook(this.props.navigation.state.params.id, startPost, endPost);
+            this.props._downBook(params.bid, startPost, endPost);
         }else{
             //下载全部内容
-            this.props._downBook(this.props.navigation.state.params.id, 1, this.props.bookRead.ptotal);
+            this.props._downBook(params.bid, 1, this.props.bookRead.ptotal);
         }
     }
     ///记录滚动的位置，在退出的时候保存
@@ -417,7 +418,7 @@ class Main extends Component {
                 let data = this.props.navigation.state.params;
                 //this.props.navigation.goBack();
                 this.props.navigation.navigate("BookChapter",{
-                    id: this.props.navigation.state.params.id, 
+                    bid: this.props.navigation.state.params.bid, 
                     data: data
                 })
                 break;
@@ -447,15 +448,18 @@ class Main extends Component {
     getData(chapter){
         let data = {};//this.props.navigation.state.params.data;
         //if(data.isAdd == undefined) data={};
-
+        let params = this.props.navigation.state.params;
         //判断是否是翻页
-        let rdPst = !!chapter? chapter: this.props.navigation.state.params.rdPst;
+        let rdPst = !!chapter? chapter: params.rdPst;
             data.rdPst = rdPst;
 
         this.props._getBookDetails({
-            id: this.props.navigation.state.params.id,
+            bid: params.bid,
+            sourceType: params.sourceType,
+            qidianid: params.qidianid,
+            //link: params.link,
             rdPst: rdPst
-        }, data)
+        }, params.list)
     }
 
     componentWillMount() {
@@ -484,10 +488,13 @@ class Main extends Component {
             bottomNavModel: 0,
             content:'',
         })
+        ////未加入书架则不保存
+        if(!this.props.navigation.state.params.isAdd) return false;
+        
         ///保存位置信息
         storage.load({
             key: 'bookInfo',
-            id: this.props.navigation.state.params.id,
+            bid: this.props.navigation.state.params.bid,
         }).then(ret => {
             ////没有则保存不保存
             if(!!!this.ctOffset) return false;
@@ -497,9 +504,11 @@ class Main extends Component {
             ///保存位置信息
             storage.save({
                 key: "bookInfo",
-                id: this.props.navigation.state.params.id,  
+                bid: this.props.navigation.state.params.bid,  
                 data: ret
             });
+        }).catch(err => {
+            console.log(err)
         })
     }
     //组件判断是否重新渲染时调用, 控制render
@@ -825,8 +834,8 @@ function mapDispatchToProps(dispatch){
         _getBookDetails:(options, data)=>{
             dispatch(actions.getBookDetails(options, data))
         },
-        _downBook:(id, startPost, endPost)=>{
-            dispatch(actions.downBook(id, startPost, endPost))
+        _downBook:(bid, startPost, endPost)=>{
+            dispatch(actions.downBook(bid, startPost, endPost))
         }
     }
 }

@@ -45,19 +45,20 @@ class Main extends Component {
     })
 
     //书籍点击
-    bookTab(id,name){
-        this.props.navigation.navigate("BookInfo",{id: id,name: name})
+    bookTab(qidianid,name){
+        this.props.navigation.navigate("BookInfo",{qidianid: qidianid,name: name})
     }
 
     //阅读书籍
     readBook(){
+        let book = this.props.bookInfo.book;
         /*this.props.navigation.navigate("BookRead", {
             id: this.props.bookInfo.book.id, 
             rdPst: this.props.bookInfo.book.rdPst,
             //////因为需要不加入书架阅读
             data: this.props.bookInfo.book
         });*/
-        this.props.navigation.navigate('BookChapter', {id: this.props.bookInfo.book.id, name: this.props.navigation.state.params.item.name, isAdd: this.props.bookInfo.isAdd})
+        this.props.navigation.navigate('BookChapter', {qidianid: book.qidianid, name: this.props.navigation.state.params.item.name, sourceType: book.sourceType, isAdd: this.props.bookInfo.isAdd})
         //return false;
     }
 
@@ -70,11 +71,11 @@ class Main extends Component {
         this.props._addBook(item, null, false);
     }
 
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bid;
     //渲染热门推荐书籍数据
     _renderItem = ({item})=>{
         return (
-            <TouchableOpacity onPress={()=>this.bookTab(item.id,item.name)}>
+            <TouchableOpacity onPress={()=>this.bookTab(item.qidianid,item.name)}>
                 <View></View>
             </TouchableOpacity>
         )
@@ -83,7 +84,7 @@ class Main extends Component {
     componentDidMount() {
         ////获取数据数据
         this.props._bookInfo({
-            id: this.props.navigation.state.params.item.id,
+            qidianid: this.props.navigation.state.params.item.qidianid,
             authorId: this.props.navigation.state.params.item.authorId
         })
         //this.props._getLove()

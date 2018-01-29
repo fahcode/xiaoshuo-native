@@ -45,6 +45,11 @@ class DrawerPage extends Component {
             console.log(err);
         });
     }
+    dlYundata=()=>{
+        //判断登陆状态，发送用户id
+        let uid = 1;
+        this.props._dlYundata({uid: uid});
+    }
     outCase=()=>{
         //console.log(RNFS.MainBundlePath);
         //导出书架
@@ -83,7 +88,14 @@ class DrawerPage extends Component {
                                 source={ require('../images/icons/mf_wangpan.png') } 
                                 style={styles.lt_icon}
                             />
-                            <Text style={styles.lt_text}>云端同步</Text>
+                            <Text style={styles.lt_text}>云端上传</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.prebox} onPress={()=>{this.dlYundata()}}>
+                            <Image 
+                                source={ require('../images/icons/mf_wangpan.png') } 
+                                style={styles.lt_icon}
+                            />
+                            <Text style={styles.lt_text}>云端下载</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.ls}>
@@ -275,6 +287,9 @@ function mapDispatchToProps(dispatch){
         _upYundata:(data)=>{
             dispatch(actions.upYundata(data))
         },
+        _dlYundata:(data)=>{
+            dispatch(actions.dlYundata(data))
+        }
     }
 }
 

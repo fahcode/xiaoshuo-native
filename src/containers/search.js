@@ -81,7 +81,7 @@ class Main extends Component {
         }
     }
 
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.qidianid;
 
     //渲染搜索结果
     _renderItem = ({item})=>{
@@ -90,7 +90,7 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=> this._bookInfo(item) }
             >
-                <View key={item.id}  style={styles.bookView}>
+                <View key={item.qidianid}  style={styles.bookView}>
                     <View style={styles.leftImg}>
                         <Image
                            source={ item.imgUrl!=""? {uri: item.imgUrl}: (require('../images/book-test.jpg')) }

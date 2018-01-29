@@ -97,8 +97,8 @@ class Main extends Component {
     _addTab = (item)=>{
         console.log(item)
     }
-    _shareBoox = (id)=>{
-        console.log(id)
+    _shareBoox = (qidianid)=>{
+        console.log(qidianid)
     }
     //删除当前id的书籍
     delectBoox = (item)=>{
@@ -107,7 +107,7 @@ class Main extends Component {
     //显示书籍列表
     _bookRead = (item)=>{
         //this.props.navigation.navigate('BookInfo', {item: item})
-        this.props.navigation.navigate('BookChapter', {id: item.id, name: item.name, author: item.author, isAdd: item.isAdd})
+        this.props.navigation.navigate('BookChapter', {bid: item.bid, qidianid: item.qidianid, name: item.name, author: item.author, sourceType: item.sourceType, sort: item.sort, isAdd: item.isAdd})
     }
     //直接进入阅读的章节
    /* _bookRead = (item)=>{
@@ -130,10 +130,10 @@ class Main extends Component {
     _renderItem = (itm)=>{
         var item = itm.item;
         //最后一个的添加组件
-        if(item.id === 'last'){
+        if(item.bid === 'last'){
             return (
                 <TouchableOpacity onPress={()=>{this._addTab(item)}}>
-                    <View key={item.id}  style={styles.bookView}>
+                    <View key={item.bid}  style={styles.bookView}>
                          <View style={styles.last}>
                              <Image
                                source={require('../images/book-add.png')}
@@ -189,7 +189,7 @@ class Main extends Component {
                         </View>
                     </View>
                     <View style={styles.control}>
-                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.id)}}>
+                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.qidianid)}}>
                             <Image
                                 source={require('../images/icons/bookrack_icon_share.png')}
                                 style={{width: px(38),height: px(41)}}
@@ -207,7 +207,7 @@ class Main extends Component {
             </TouchableHighlight>
         )
     };
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bid;
     onButtonPress = ()=>{
 
     }
@@ -215,7 +215,7 @@ class Main extends Component {
         console.log('书架render次数')
         let list = this.props.bookCase.list,
             isUpdata = this.props.bookCase.isUpdata;
-
+        console.log(list)
         return (
             <View style={styles.container}>
                 <FlatList

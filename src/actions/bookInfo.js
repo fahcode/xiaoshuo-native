@@ -23,9 +23,9 @@ export function bookInfo(options){
             isLoad: true
         }));
 
-        storage.load({
+        /*storage.load({
             key: 'bookInfo',
-            id: options.id
+            id: options.bid
         }).then(ret => {
             ///直接从书架拿
             dispatch(handle({
@@ -37,12 +37,12 @@ export function bookInfo(options){
             if(err.name == "NotFoundError") {
                 getData();
             }
-        });
-        function getData(){
+        });*/
+        //function getData(){
             Fetch({
                 url:"bookInfo",
                 type:"GET",
-                data: {id: options.id, authorId: options.authorId},
+                data: {qidianid: options.qidianid, authorId: options.authorId},
                 success:function(data){
                     if(data.status==1){
                         dispatch(handle({
@@ -51,11 +51,11 @@ export function bookInfo(options){
                         }));
                         console.log('临时保存'+ data.data)
                         //临时保存
-                        storage.save({
+                        /*storage.save({
                             key: "bookInfo",
-                            id: options.id,  
+                            id: options.bid,  
                             data: data.data
-                        });
+                        });*/
                     }
                 },
                 error: function(result){
@@ -71,6 +71,6 @@ export function bookInfo(options){
                     }))
                 }
             })
-        }
+        //}
     }
 }

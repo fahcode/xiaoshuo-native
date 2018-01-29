@@ -34,19 +34,22 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            pageRdPst: 1
+            pageRdPst: 0
         }
     }
     
     //列表目录点击,章节里面是记录的pid
     bookDetail(pid){
-        let data = this.props.navigation.state.params.data;
-
+        let params = this.props.navigation.state.params;
         this.props.navigation.navigate("BookRead",{
-            id: this.props.navigation.state.params.id,
-            name: this.props.navigation.state.params.name,
-            rdPst: pid,
-            data: data
+            bid: params.bid,
+            list: this.props.bookChapter.list,
+            qidianid: params.qidianid,
+            name: params.name,
+            link: params.link,
+            isAdd: params.isAdd,
+            sourceType: params.sourceType,
+            rdPst: pid
         });
         return false;
     }
@@ -54,7 +57,7 @@ class Main extends Component {
     //下拉刷新
     _onRefresh = ()=>{
         if(!this.props.bookChapter.loading){
-            this.getData(null, this.props.bookChapter.sort, true);
+            this.getData(null, null, true);
         }
     }
 
@@ -123,13 +126,15 @@ class Main extends Component {
 
     //请求数据，根据刷新的方式来加载不同请求,这边增加界面选择来源
     getData(sourceType, sort, isupdate){
-        console.log('切换到的来源'+sourceType)
+        let params = this.props.navigation.state.params;
         this.props._getChapter({
-            id: this.props.navigation.state.params.id,
+            bid: params.bid,
+            qidianid: params.qidianid,
+            oldSourceType: params.sourceType,
             sourceType: sourceType,
             sort: sort,
             isupdate: isupdate
-        }, this.props.navigation.state.params.data)
+        })
     } 
     componentWillMount(){
 
@@ -166,14 +171,17 @@ class Main extends Component {
 
         this.props._handle({
             list: [],
+            rdPst: 1,
+            showPop: false,
             loading:false
         })
     }
     //组件判断是否重新渲染时调用, 控制render
     shouldComponentUpdate(nextProps, nextState){
+        //console.log('改变'+ JSON.stringify(nextProps.bookChapter));
         ////////列表长度，排序规则，修改来源,是否显示弹窗改变才会触发。或者每次修改都情况list
-        //视图主动更新， loding改变， 来源弹窗
-        return (this.props.bookChapter.isUpView || nextProps.bookChapter.loading !== this.props.bookChapter.loading || nextProps.bookChapter.showPop !== this.props.bookChapter.showPop)
+        //视图主动更新， list改变， 来源弹窗, list本身比较大，但是loding会增加一次
+        return (this.props.bookChapter.isUpView || nextProps.bookChapter.list !== this.props.bookChapter.list || nextProps.bookChapter.loading !== this.props.bookChapter.loading || nextProps.bookChapter.showPop !== this.props.bookChapter.showPop)
     }
 
     render() {
@@ -212,7 +220,7 @@ class Main extends Component {
                     renderItem={this._renderItem}
                     refreshing={this.props.bookChapter.loading}
                     onRefresh={this._onRefresh}
-                    
+                    initialNumToRender={100}
                     initialScrollIndex={rdPst}
                     getItemLayout={(data, index)=>(
                         {length: oneListHei, offset: oneListHei * index, index}
