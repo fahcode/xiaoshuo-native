@@ -159,11 +159,11 @@ const MainStackNavigator = StackNavigator({
 //export default MainStackNavigator
 /////通过侧边栏包裹
 export default DrawerNavigator({
-  Home: {
+  DNHome: {
     screen: MainStackNavigator
   }
 }, {
-    initialRouteName: 'Home',
+    initialRouteName: 'DNHome',
     drawerWidth: px(900),
     drawerPosition: 'left',
     title: "",

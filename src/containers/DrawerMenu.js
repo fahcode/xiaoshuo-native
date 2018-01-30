@@ -68,8 +68,23 @@ class DrawerPage extends Component {
                 });
         }*/
     }
+    loginOut=()=>{
+        console.log('推出');
+    }
+    //将要插入dom
+    componentWillMount(){
+        this.props._getInit();
+    }
     render() {
-        let name = (this.props.publics.isLogin)? (this.props.publics.name): '点击登录';
+        let txts = (<View><Text style={styles.userText}>点击登录</Text></View>);
+        if(this.props.publics.isLogin){
+            txts = (
+                <View>
+                    <Text style={styles.userText}>{this.props.publics.name}</Text>
+                    <Button title="退出" color="red" onPress={()=>{this.loginOut()}} />
+                </View>
+            );
+        }
         return (
             <View style={styles.container}>
                 <View  style={styles.userTop}>
@@ -78,7 +93,7 @@ class DrawerPage extends Component {
                             source={ require('../images/user/login-photo.jpg') } 
                             style={styles.headIcon}
                         />
-                        <Text style={styles.userText}>{name}</Text>
+                        {txts}
                     </TouchableOpacity>
                 </View>
                 <View style={styles.funcList}>
@@ -283,6 +298,9 @@ function mapDispatchToProps(dispatch){
     return {
         _handle:(options)=>{
             dispatch(actions.handle(options))
+        },
+        _getInit: ()=>{
+        	dispatch(actions.getInit())
         },
         _upYundata:(data)=>{
             dispatch(actions.upYundata(data))

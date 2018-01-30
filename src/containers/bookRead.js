@@ -379,7 +379,6 @@ class Main extends Component {
     }
     ///插入内容以后修改位置
     setCtOffset=()=>{
-        console.log('开始修改位置'+this.props.bookRead.ctOffset.y)
         this.refs._scrollView.scrollTo({x: 0, y: this.props.bookRead.ctOffset.y})
     }
 
@@ -463,10 +462,9 @@ class Main extends Component {
     }
 
     componentWillMount() {
-        
+        this.getData();
     }
     componentDidMount(){
-        this.getData();
         //读取阅读样式设置
         /*if(set.length>0){
             this.props._handle({
@@ -488,13 +486,14 @@ class Main extends Component {
             bottomNavModel: 0,
             content:'',
         })
+        let params = this.props.navigation.state.params;
         ////未加入书架则不保存
-        if(!this.props.navigation.state.params.isAdd) return false;
-        
+        if(!params.isAdd) return false;
+        console.log(params)
         ///保存位置信息
         storage.load({
             key: 'bookInfo',
-            bid: this.props.navigation.state.params.bid,
+            id: params.bid,
         }).then(ret => {
             ////没有则保存不保存
             if(!!!this.ctOffset) return false;
@@ -504,7 +503,7 @@ class Main extends Component {
             ///保存位置信息
             storage.save({
                 key: "bookInfo",
-                bid: this.props.navigation.state.params.bid,  
+                id: params.bid,
                 data: ret
             });
         }).catch(err => {

@@ -3,10 +3,11 @@
  *
  * 网络请求
  */
+ //"react": "16.0.0-beta.5","react-native": "0.49.3","react-native-storage": "^0.2.2","react-native-cookies": "^3.2.0","react-native-fs": "^2.9.7","react-native-storage": "^0.2.2","react-navigation": "^1.0.0-beta.27",
 //接口域名
 //const host="http://45.124.67.223:3888/";
-const host="http://112.74.33.167:3888/";
-//const host="http://192.168.140.56:3888/";
+//const host="http://112.74.33.167:3888/";
+const host="http://192.168.140.56:3888/";
 //const host="http://192.168.1.111:3888/";
 //接口URL集合
 const urls={

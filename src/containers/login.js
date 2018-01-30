@@ -16,6 +16,7 @@ import {
 import {
     NavigationActions
 } from 'react-navigation';
+import CookieManager from 'react-native-cookies';
 
 import px     from '../util/px';
 import {connect} from 'react-redux';
@@ -44,11 +45,9 @@ class Main extends Component {
         this.props.navigation.navigate('Register');
     }
     nameHandleChange=(text)=>{
-        console.log(text);
         this.setState({name: text});
     }
     pwHandleChange=(text)=>{
-        console.log(text);
         this.setState({password: text});
     }
     doLogin(){

@@ -20,10 +20,9 @@ export function handle(data){
 export function getBookDetails(options, listdata){
     return dispatch => {
         dispatch(handle({
-            content: "",
             loading: true
         }))
-
+        
         storage.load({
             key: 'bookInfo',
             id: options.bid,
@@ -45,7 +44,6 @@ export function getBookDetails(options, listdata){
             }))
 
             if(tpage.content!=""){
-                console.log(tpage.content)
                 ////更新阅读的内容
                 dispatch(handle({
                     content: tpage.content,
@@ -64,10 +62,12 @@ export function getBookDetails(options, listdata){
                     key: "bookInfo",
                     id: options.bid,  
                     data: now
+                }).then(ret =>{
+                    //更新在读书籍和书架的视图, 主要是修改阅读的进度
+                    dispatch(bookCase.handle({isUpView: true}))
+                    /////更新章节列表视图，主要是修改是否下载的状态
+                    dispatch(bookChapter.handle({isUpView: true}));
                 });
-
-                //更新在读书籍和书架的视图, 主要是修改阅读的进度
-                dispatch(bookCase.handle({isUpView: true}))
             }else{
                 console.log('开始抓文章内容')
                 Fetch({
@@ -82,9 +82,6 @@ export function getBookDetails(options, listdata){
                                 content: result.data,
                                 loading: false
                             }));
-                            //不在书架的，不需要保存
-                            //if(!ret.isAdd) return false;
-                            console.log('下面是保存数据了')
                             let now = ret;
                             //把书籍合并到数据库,先取再合
                             now.pageList[options.rdPst-1].content = result.data;
@@ -97,12 +94,12 @@ export function getBookDetails(options, listdata){
                                 key: "bookInfo",
                                 id: options.bid,  
                                 data: now
-                            });
-                            //更新在读书籍和书架的视图, 主要是修改阅读的进度
-                            dispatch(bookCase.handle({isUpView: true}))
-                            /////更新章节列表视图，主要是修改是否下载的状态
-                            dispatch(bookChapter.handle({isUpView: true}))
-                            
+                            }).then(dd => {
+                                //更新在读书籍和书架的视图, 主要是修改阅读的进度
+                                dispatch(bookCase.handle({isUpView: true}))
+                                /////更新章节列表视图，主要是修改是否下载的状态
+                                dispatch(bookChapter.handle({isUpView: true}));
+                            })
                         }
                     },
                     error:function(result){
@@ -120,7 +117,6 @@ export function getBookDetails(options, listdata){
                     }
                 })
             };
-            
         }).catch(err => {
             //////没查询到书籍，代表未加入书架,已经废弃，使用临时保存逻辑
             if(err.name != "NotFoundError"){ alert(err.message); return false;}

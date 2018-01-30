@@ -86,7 +86,6 @@ class Main extends Component {
             this.props._handle({
                 isUpView:false
             })
-            console.log('更新书架');
         }
     }
     //组件判断是否重新渲染时调用
@@ -215,7 +214,6 @@ class Main extends Component {
         console.log('书架render次数')
         let list = this.props.bookCase.list,
             isUpdata = this.props.bookCase.isUpdata;
-        console.log(list)
         return (
             <View style={styles.container}>
                 <FlatList

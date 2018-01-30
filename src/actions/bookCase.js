@@ -19,7 +19,6 @@ export function getBookCase(noDele){
     return dispatch => {
         // 获取某个key下的所有数据(仅key-id数据)
         storage.getAllDataForKey('bookInfo').then(users => {
-            console.log(users)
             let arr = [];
             for(let i=0;i<users.length;i++){
                 //如果不是书架内容,直接删除内容
@@ -78,7 +77,6 @@ export function updataBookCase(){
                     success:function(result){
                         if(result.status==1){
                             let dds = result.data;
-                            console.log(JSON.stringify(dds));
                             ////////循环保存
                             for(let j =0;j<dds.length;j++){
                                 let nd = dds[j],

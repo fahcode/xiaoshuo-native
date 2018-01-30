@@ -39,7 +39,7 @@ class Main extends Component {
     }
     
     //列表目录点击,章节里面是记录的pid
-    bookDetail(pid){
+    bookDetail(pid, index){
         let params = this.props.navigation.state.params;
         this.props.navigation.navigate("BookRead",{
             bid: params.bid,
@@ -51,7 +51,10 @@ class Main extends Component {
             sourceType: params.sourceType,
             rdPst: pid
         });
-        return false;
+        /////告诉列表进入的位置
+        this.props._handle({
+            rdPst: index
+        })
     }
 
     //下拉刷新
@@ -64,15 +67,14 @@ class Main extends Component {
     _keyExtractor = (item, index) => item.pid;
 
     //渲染数据
-    _renderItem = ({item})=>{
-
+    _renderItem = (item, index, pageRdPst)=>{
         let dianColor = (item.content != "")? "red": "#999";
         let name = item.name  + (item.isvip? "--(vip)": "");
         /////当前阅读的位置
-        let listBg = (item.pid == (this.state.pageRdPst+1))? {backgroundColor: '#ffb307'}: {};
+        let listBg = (index == pageRdPst)? {backgroundColor: '#ffb307'}: {};
         return (
-            <TouchableOpacity onPress={()=>{this.bookDetail(item.pid)}}>
-                <View key={item.pid} style={[styles.listView, listBg]}>
+            <TouchableOpacity onPress={()=>{this.bookDetail(item.pid, index)}}>
+                <View key={item.index} style={[styles.listView, listBg]}>
                     <View style={styles.dian}><Icon name="md-bulb" size={20} color={dianColor} /></View>
 
                     <Text style={styles.title}>
@@ -101,7 +103,6 @@ class Main extends Component {
         this.props._handle({
             showPop: visible
         })
-        return false;
     }
     ////切换来源
     sourceTab = (type)=>{
@@ -153,18 +154,33 @@ class Main extends Component {
         this.getData();
     }
     componentDidMount() {
-        /*let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
+        //列表
+        /*let data = this.props.bookChapter.list,
+            listLen = data.length==0? 1: data.length;
+        let oneListHei = px(120) + 1;
+        let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
+        console.log('设置到位置')
         console.log(rdPst)
-        this.refs.sectionList.scrollToIndex({animated: true, index: rdPst+1})*/
+        console.log(oneListHei*(rdPst+1))
+        this.refs.sectionList.scrollToOffset({offset: oneListHei*(rdPst+1)})*/
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.bookChapter.isUpView){
-            /////重新抓列表
+            /////重新抓列表，不发请求，只是取列表阅读下载状态
             this.getData()
             this.props._handle({
                 isUpView: false
             })
         }
+    }
+    //组件判断是否重新渲染时调用, 控制render
+    shouldComponentUpdate(nextProps, nextState){
+        //console.log('改变'+ JSON.stringify(nextProps.bookChapter));
+        ////////列表长度，排序规则，修改来源,是否显示弹窗改变才会触发。或者每次修改都情况list
+        //list改变， 来源弹窗, list本身比较大，但是loding会增加一次
+        let nextData = nextProps.bookChapter,
+            proData = this.props.bookChapter;
+        return (nextData.list !== proData.list || nextData.loading !== proData.loading || nextData.showPop !== proData.showPop)
     }
     /////出去的时候清空列表，释放内存占用
     componentWillUnmount(){
@@ -176,13 +192,6 @@ class Main extends Component {
             loading:false
         })
     }
-    //组件判断是否重新渲染时调用, 控制render
-    shouldComponentUpdate(nextProps, nextState){
-        //console.log('改变'+ JSON.stringify(nextProps.bookChapter));
-        ////////列表长度，排序规则，修改来源,是否显示弹窗改变才会触发。或者每次修改都情况list
-        //视图主动更新， list改变， 来源弹窗, list本身比较大，但是loding会增加一次
-        return (this.props.bookChapter.isUpView || nextProps.bookChapter.list !== this.props.bookChapter.list || nextProps.bookChapter.loading !== this.props.bookChapter.loading || nextProps.bookChapter.showPop !== this.props.bookChapter.showPop)
-    }
 
     render() {
         console.log('章节列表render次数')
@@ -192,18 +201,14 @@ class Main extends Component {
         let oneListHei = px(120) + 1;
         //当前阅读的位置,排序不一样，位置也不一样
         let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
-        console.log(rdPst)
         //this.setState({pageRdPst: rdPst});
-        //console.log('位置：'+rdPst)
 
         //当前来源列表
         let sourceList = this.props.bookChapter.sourceList;
-        let showPop = this.props.bookChapter.showPop;
-        
+        let showPop = this.props.bookChapter.showPop; 
 
         return (
             <View style={styles.container}>
-                {/*/////切换小说来源*/}
                 {/*
                     initialNumToRender={30}
                 initialScrollIndex={rdPst}
@@ -217,10 +222,10 @@ class Main extends Component {
                     ref="sectionList"
                     data={data}
                     keyExtractor={this._keyExtractor}
-                    renderItem={this._renderItem}
+                    renderItem={({item, index})=>(this._renderItem(item, index, rdPst))}
                     refreshing={this.props.bookChapter.loading}
                     onRefresh={this._onRefresh}
-                    initialNumToRender={100}
+                    initialNumToRender={50}
                     initialScrollIndex={rdPst}
                     getItemLayout={(data, index)=>(
                         {length: oneListHei, offset: oneListHei * index, index}

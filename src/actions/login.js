@@ -4,7 +4,7 @@
  * 登录
  */
 import Fetch from '../util/fetch';
-import publics from './publics';
+import * as publics from './publics';
 
  
 export function handle(data){
@@ -25,8 +25,8 @@ export function dologin(options, navigation){
             url:"login",
             data: options,
             type: "POST",
-            success:function(data){
-                if(data.status==1){
+            success:function(ret){
+                if(ret.status==1 && ret.data.code==1){
                     //修改登陆状态
                     dispatch(handle({
                         loading: false,
@@ -41,11 +41,12 @@ export function dologin(options, navigation){
                     ////设置cookie的状态
 
                     //console.log('登陆成功后跳转')
-                    navigation.navigate('BookCase');
+                    navigation.navigate('Home');
                     //打开左侧栏
                     navigation.navigate('DrawerOpen');
+                    alert(ret.data.msg)
                 }else{
-                    alert(data.result);
+                    alert(ret.data.msg);
                 }
             },
             error: function(status, text){

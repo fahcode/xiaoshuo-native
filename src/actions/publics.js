@@ -13,6 +13,31 @@ export function handle(data){
     }
 }
 
+//获取初始化数据
+export function getInit(){
+    return dispatch => {
+
+        Fetch({
+            url:"init",
+            data: {},
+            type: "GET",
+            success:function(data){
+                if(data.status==1){
+                    //上传成功
+                    
+                }else{
+                    alert(data.result);
+                }
+            },
+            error: function(status, text){
+                console.log(text);
+            },
+            reset: function(result){
+            }
+        })
+    }
+}
+
 //云端上传
 export function upYundata(data){
     //console.log('同步'+data);
@@ -64,7 +89,6 @@ export function dlYundata(data){
             type: "GET",
             success:function(result){
                 if(result.status==1){
-                    //console.log(result);return false;
                     //下载成功，写入书架
                     let len = result.data.length,
                         i = 0;
@@ -74,19 +98,30 @@ export function dlYundata(data){
                         ndata.bid = parseInt(ndata.bid);
                         ndata.qidianid = parseInt(ndata.qidianid);
                         ndata.authorId = parseInt(ndata.authorId);
-                        console.log(ndata.bid);
-                        ////保存单独一本书
-                        storage.save({
-                            key: "bookInfo",
-                            id: ndata.bid,  
-                            data: ndata
-                        }).then(()=>{
-                            /////添加搜索数据到书架后 就直接去获取详细的数据
-                            getInfo(ndata);
-                            i++;
-                            if(i <= len-1) saveOne(result.data[i]);
+                        console.log(ndata)
+                        //在本地不存在
+                        storage.load({
+                            key: 'bookInfo',
+                            id: ndata.bid,
+                        }).catch(err => {
+                            console.log(err)
+                            if(err.name != "NotFoundError"){ alert(err.message); return false;}
+                            ////保存单独一本书
+                            storage.save({
+                                key: "bookInfo",
+                                id: ndata.bid,  
+                                data: ndata
+                            }).then(()=>{
+                                /////添加搜索数据到书架后 就直接去获取详细的数据
+                                getInfo(ndata);
+                                /////设置书架更新
+                                dispatch( bookCase.handle({isUpView:true}) )
+                                i++;
+                                if(i <= len-1) saveOne(result.data[i]);
+                            });
                         });
                     };
+                    alert('书架下载成功');
                     dispatch(handle({
                         uploading: false
                     }));

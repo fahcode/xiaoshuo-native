@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../node_modules/react-native-cookies/android/react-native-cookies.iml" filepath="$PROJECT_DIR$/../node_modules/react-native-cookies/android/react-native-cookies.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../node_modules/react-native-fs/android/react-native-fs.iml" filepath="$PROJECT_DIR$/../node_modules/react-native-fs/android/react-native-fs.iml" />
       <module fileurl="file://$PROJECT_DIR$/../node_modules/react-native-vector-icons/android/react-native-vector-icons.iml" filepath="$PROJECT_DIR$/../node_modules/react-native-vector-icons/android/react-native-vector-icons.iml" />
       <module fileurl="file://$PROJECT_DIR$/xiaoshuo.iml" filepath="$PROJECT_DIR$/xiaoshuo.iml" />
     </modules>

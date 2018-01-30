@@ -3,6 +3,7 @@ package com.xiaoshuo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.psykar.cookiemanager.CookieManagerPackage;
 import com.rnfs.RNFSPackage;
 //import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
@@ -27,9 +28,10 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNFSPackage(),
-          //new RealmReactPackage(),
+          new CookieManagerPackage(),
+          new RNFSPackage(),
           new VectorIconsPackage()
+          //new RealmReactPackage()
       );
     }
 
