@@ -21,6 +21,7 @@ import {
 import {connect} from 'react-redux';
 import DeviceBattery from 'react-native-device-battery';
 import Slider from "react-native-slider";
+import KeyEvent from 'react-native-keyevent';
 import * as actions from '../actions/bookRead';
 import readTemplate from '../util/readTemplate';
 
@@ -473,7 +474,24 @@ class Main extends Component {
                 lightVal:set[0].lightVal
             })
         }*/
-        
+        // if you want to react to keyDown
+        KeyEvent.onKeyDownListener((keyEvent) => {
+          console.log(`onKeyDown keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+        });
+     
+        // if you want to react to keyUp
+        KeyEvent.onKeyUpListener((keyEvent) => {
+          console.log(`onKeyUp keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+        });
+     
+        // if you want to react to keyMultiple
+        KeyEvent.onKeyMultipleListener((keyEvent) => {
+          console.log(`onKeyMultiple keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+          console.log(`Characters: ${keyEvent.characters}`);
+        });
     }
     //已加载组件收到新的参数时调用
     componentWillReceiveProps(nextProps) {

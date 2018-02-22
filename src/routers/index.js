@@ -36,6 +36,7 @@ import BookClassifyList   from '../containers/bookClassifyList';//分类列表�
 import BookRankList   from '../containers/bookRankList';//分类排行页
 import DrawerMenu  from '../containers/DrawerMenu';//分类排行页
 import webNavigation  from '../containers/webNavigation';//分类排行页
+import Loading  from '../components/loading';//
 
 
 
@@ -158,7 +159,7 @@ const MainStackNavigator = StackNavigator({
 
 //export default MainStackNavigator
 /////通过侧边栏包裹
-export default DrawerNavigator({
+export default  DrawerNavigator({
   DNHome: {
     screen: MainStackNavigator
   }
@@ -170,6 +171,7 @@ export default DrawerNavigator({
     contentComponent: (props) => <DrawerMenu dwData={props} />,
     drawerBackgroundColor: 'transparent'
 });
+
 
 const styles = StyleSheet.create({
     icon:{

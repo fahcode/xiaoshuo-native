@@ -27,16 +27,19 @@ export function dologin(options, navigation){
             type: "POST",
             success:function(ret){
                 if(ret.status==1 && ret.data.code==1){
+                    console.log(2, ret.data.uid);
                     //修改登陆状态
                     dispatch(handle({
                         loading: false,
                         isLogin: true,
-                        name: options.name
+                        name: options.name,
+                        uid: ret.data.uid
                     }));
                     dispatch(publics.handle({
                         loading: false,
                         isLogin: true,
-                        name: options.name
+                        name: options.name,
+                        uid: ret.data.uid
                     }));
                     ////设置cookie的状态
 

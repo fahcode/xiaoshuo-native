@@ -35,7 +35,7 @@ export const getChapter = (options)=>{
             let sourceType = !!options.sourceType? options.sourceType: oldSourceType;
 
             ////如果传了sort则使用，没有则使用默认数据里面的。
-            let sort = !!options.sort? options.sort: (!!ret.sort? ret.sort: 'asc');
+            let sort = !!options.sort? options.sort: (!!ret.sort? ret.sort: options.sort);
             console.log('判断'+ options.sourceType)
             ////有数据,且不传来源,且不是更新章节列表,  代表只排序
             if(pageList.length>0 && !!!options.sourceType && !!!options.isupdate && ret.isAdd){

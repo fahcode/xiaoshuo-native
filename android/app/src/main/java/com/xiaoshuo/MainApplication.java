@@ -3,6 +3,7 @@ package com.xiaoshuo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.github.kevinejohn.keyevent.KeyEventPackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
 import com.rnfs.RNFSPackage;
 //import io.realm.react.RealmReactPackage;
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new KeyEventPackage(),
           new CookieManagerPackage(),
           new RNFSPackage(),
           new VectorIconsPackage()

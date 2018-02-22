@@ -12,7 +12,8 @@ import {
     Platform,
     TouchableHighlight
 } from 'react-native';
-//import RNFS from 'react-native-fs';
+import RNFS from 'react-native-fs';
+import CookieManager from "react-native-cookies";
 
 import px from '../util/px';
 import {connect} from 'react-redux';
@@ -26,6 +27,10 @@ class DrawerPage extends Component {
         this.props.dwData.navigation.navigate("Login");
     }
     upYundata=()=>{
+        if(!this.props.publics.isLogin){
+            alert('未登录！');
+            return false;
+        }
         // 获取某个key下的所有数据(仅key-id数据)
         storage.getAllDataForKey('bookInfo').then(users => {
             let arr = [];
@@ -40,48 +45,93 @@ class DrawerPage extends Component {
                     arr.push(narr)
                 }
             }
-            this.props._upYundata(arr);
+            this.props._upYundata(arr, this.props.publics.uid);
         }).catch(err => {
             console.log(err);
         });
     }
     dlYundata=()=>{
+        if(!this.props.publics.isLogin){
+            alert('未登录！');
+            return false;
+        }
         //判断登陆状态，发送用户id
-        let uid = 1;
+        let uid = this.props.publics.uid;
         this.props._dlYundata({uid: uid});
     }
+    inputCase=()=>{
+        RNFS.readDir(RNFS.ExternalDirectoryPath)
+        .then((result) => {
+            console.log('GOT RESULT', result);
+
+            // stat the first file
+            return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+        })
+        .then((statResult) => {
+            if (statResult[0].isFile()) {
+              // if we have a file, read it
+              return RNFS.readFile(statResult[1], 'utf8');
+            }
+
+            return 'no file';
+        })
+        .then((contents) => {
+            // log the file contents
+            console.log(contents);
+        })
+        .catch((err) => {
+            console.log(err.message, err.code);
+        });
+    }
     outCase=()=>{
-        //console.log(RNFS.MainBundlePath);
+        /*console.log(RNFS.DocumentDirectoryPath);
+        console.log(RNFS.ExternalDirectoryPath);
+        console.log(RNFS.ExternalStorageDirectoryPath);*/
         //导出书架
+        // 获取某个key下的所有数据(仅key-id数据)
+        storage.getAllDataForKey('bookInfo').then(users => {
+            console.log(users);
+            let txts = JSON.stringify(users);
+            //writeFile(txts)
+        }).catch(err => {
+            console.log(err);
+        });
         /*将文本写入本地 txt*/
-        /*writeFile() {
+        function writeFile(txts) {
             // create a path you want to write to
-            const path = RNFS.MainBundlePath + '/test.txt';
+            const path = RNFS.ExternalDirectoryPath + '/case.txt';
 
             // write the file
-            RNFS.writeFile(path, '这是一段文本，YES', 'utf8')
+            RNFS.writeFile(path, txts, 'utf8')
                 .then((success) => {
                     console.log('path', path);
                 })
                 .catch((err) => {
                     console.log(err.message);
                 });
-        }*/
+        }
     }
     loginOut=()=>{
-        console.log('推出');
+        this.props._loginOut();
+        //清空cookie
+        CookieManager.clearAll()
+		.then((res) => {
+			console.log('CookieManager.clearAll =>', res);
+		});
     }
     //将要插入dom
     componentWillMount(){
         this.props._getInit();
     }
     render() {
-        let txts = (<View><Text style={styles.userText}>点击登录</Text></View>);
+        let txts = (<View style={styles.userLine}><Text style={styles.userText}>点击登录</Text></View>);
         if(this.props.publics.isLogin){
             txts = (
-                <View>
+                <View style={styles.userLine}>
                     <Text style={styles.userText}>{this.props.publics.name}</Text>
-                    <Button title="退出" color="red" onPress={()=>{this.loginOut()}} />
+                    <TouchableOpacity style={styles.loginOutBtn} onPress={()=>{this.loginOut()}}>
+                    	<Text style={styles.userText}>退出</Text>
+                    </TouchableOpacity>
                 </View>
             );
         }
@@ -114,7 +164,7 @@ class DrawerPage extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.ls}>
-                        <TouchableOpacity style={styles.prebox}>
+                        <TouchableOpacity style={styles.prebox} onPress={()=>{this.inputCase()}}>
                             <Image 
                                 source={ require('../images/icons/menu_icon_file_vip.png') } 
                                 style={styles.lt_icon}
@@ -218,6 +268,7 @@ const styles = StyleSheet.create({
         backgroundColor:"#eee"
     },
     userTop:{
+    	width: '100%',
         height:px(Platform.OS === 'ios'?470:410),
         backgroundColor:"#ffb307",
         flexDirection:"row",
@@ -228,10 +279,19 @@ const styles = StyleSheet.create({
         width: px(220),
         height: px(220),
     },
+    userLine: {
+    	width: '100%',
+    	marginTop: px(20),
+    	alignItems:"center",
+    },
     userText: {
-        width: '100%',
-        textAlign: "center",
-        marginTop: px(20),
+		textAlign: "center",
+		lineHeight: px(60),
+    },
+    loginOutBtn: {
+		width: px(160),
+		height: px(60),
+		backgroundColor: 'red'
     },
     funcList: {
         marginTop: px(20),
@@ -302,8 +362,11 @@ function mapDispatchToProps(dispatch){
         _getInit: ()=>{
         	dispatch(actions.getInit())
         },
-        _upYundata:(data)=>{
-            dispatch(actions.upYundata(data))
+        _loginOut: ()=>{
+        	dispatch(actions.loginOut())
+        },
+        _upYundata:(data, uid)=>{
+            dispatch(actions.upYundata(data, uid))
         },
         _dlYundata:(data)=>{
             dispatch(actions.dlYundata(data))

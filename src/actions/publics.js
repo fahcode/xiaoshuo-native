@@ -21,12 +21,47 @@ export function getInit(){
             url:"init",
             data: {},
             type: "GET",
-            success:function(data){
-                if(data.status==1){
-                    //上传成功
-                    
+            success:function(ret){
+                if(ret.status==1){
+                    //获取状态值
+                    dispatch(handle({
+                        isLogin: ret.data.isLogin,
+                        name: ret.data.name,
+                        img: ret.data.img,
+                        settings: ret.data.settings
+                    }));
                 }else{
-                    alert(data.result);
+                    alert(ret.data.msg);
+                }
+            },
+            error: function(status, text){
+                console.log(text);
+            },
+            reset: function(result){
+            }
+        })
+    }
+}
+//退出登陆
+export function loginOut(){
+    return dispatch => {
+        Fetch({
+            url:"loginOut",
+            data: {},
+            type: "GET",
+            success:function(ret){
+                if(ret.status==1 && ret.data.code == 1){
+                    //获取状态值
+                    dispatch(handle({
+                        isLogin: false,
+                        name: '',
+                        img: ''
+                    }));
+                    
+                    //提示
+                    alert(ret.data.msg);
+                }else{
+                    alert(ret.data.msg);
                 }
             },
             error: function(status, text){
@@ -39,7 +74,7 @@ export function getInit(){
 }
 
 //云端上传
-export function upYundata(data){
+export function upYundata(data, uid){
     //console.log('同步'+data);
     
     return dispatch => {
@@ -49,15 +84,15 @@ export function upYundata(data){
 
         Fetch({
             url:"updateCase",
-            data: JSON.stringify(data),
+            data: JSON.stringify({books: data, uid: uid}),
             type: "POST",
             contentType: 'application/json',
-            success:function(data){
-                if(data.status==1){
+            success:function(ret){
+                if(ret.status==1 && ret.data.code ==1){
                     //上传成功
-                    
+                    alert(ret.data.msg);
                 }else{
-                    alert(data.result);
+                    alert(ret.data.msg);
                 }
             },
             error: function(status, text){
@@ -87,12 +122,14 @@ export function dlYundata(data){
             url:"dldateCase",
             data: data,
             type: "GET",
-            success:function(result){
-                if(result.status==1){
+            success:function(ret){
+                if(ret.status==1 && ret.data.code==1){
+                    console.log(ret.data.arr)
                     //下载成功，写入书架
-                    let len = result.data.length,
+                    let darr = ret.data.arr,
+                        len = darr.length,
                         i = 0;
-                    saveOne(result.data[i]);
+                    saveOne(darr[i]);
                     function saveOne(data){
                         let ndata = data;
                         ndata.bid = parseInt(ndata.bid);
@@ -117,7 +154,7 @@ export function dlYundata(data){
                                 /////设置书架更新
                                 dispatch( bookCase.handle({isUpView:true}) )
                                 i++;
-                                if(i <= len-1) saveOne(result.data[i]);
+                                if(i <= len-1) saveOne(darr[i]);
                             });
                         });
                     };
@@ -126,7 +163,7 @@ export function dlYundata(data){
                         uploading: false
                     }));
                 }else{
-                    alert(result.data);
+                    alert(ret.data.msg);
                 }
             },
             error: function(status, text){

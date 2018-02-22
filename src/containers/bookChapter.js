@@ -19,6 +19,7 @@ import {connect} from 'react-redux';
 import px   from '../util/px';
 import * as actions from '../actions/bookChapter';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Setting from '../util/settings';
 
 class Main extends Component {
     static navigationOptions = ({navigation}) => ({
@@ -138,19 +139,6 @@ class Main extends Component {
         })
     } 
     componentWillMount(){
-
-        let getAllData = async ()=>{
-            //获取默认配置项
-            this.Setting = await storage.load({
-                key: 'Setting'
-            });
-            //设置来源列表
-            this.props._handle({
-                sourceList: this.Setting.sourceList,
-            })
-            
-        }
-        getAllData();
         this.getData();
     }
     componentDidMount() {
@@ -202,10 +190,11 @@ class Main extends Component {
         //当前阅读的位置,排序不一样，位置也不一样
         let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
         //this.setState({pageRdPst: rdPst});
-
-        //当前来源列表
-        let sourceList = this.props.bookChapter.sourceList;
-        let showPop = this.props.bookChapter.showPop; 
+        console.log(this.props)
+        //当前来源列表,判断init接口是否有数据，有则使用，无则使用本地默认的
+        let initSourceList = !!this.props.publics.settings? this.props.publics.settings.sourceList: [],
+            sourceList = initSourceList.length>0? initSourceList:Setting.sourceList,
+            showPop = this.props.bookChapter.showPop; 
 
         return (
             <View style={styles.container}>
@@ -225,7 +214,7 @@ class Main extends Component {
                     renderItem={({item, index})=>(this._renderItem(item, index, rdPst))}
                     refreshing={this.props.bookChapter.loading}
                     onRefresh={this._onRefresh}
-                    initialNumToRender={50}
+                    initialNumToRender={100}
                     initialScrollIndex={rdPst}
                     getItemLayout={(data, index)=>(
                         {length: oneListHei, offset: oneListHei * index, index}
@@ -383,7 +372,7 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state){
-    return {bookChapter: state.bookChapter};
+    return {bookChapter: state.bookChapter, publics: state.publics};
 }
 
 
