@@ -37,16 +37,16 @@ class Main extends Component {
     })
 
     //列表书籍点击
-    listTab(id,name){
-        this.props.navigation.navigate("BookInfo",{name,id})
+    listTab(qidianid,name){
+        this.props.navigation.navigate("BookInfo",{name,qidianid})
     }
 
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bid;
 
     //渲染热门推荐书籍数据
     _renderItem = ({item})=>{
         return (
-            <TouchableOpacity onPress={()=>this.listTab(item.id,item.name)}>
+            <TouchableOpacity onPress={()=>this.listTab(item.qidianid,item.name)}>
                 <BookListComponent data={item} />
             </TouchableOpacity>
         )

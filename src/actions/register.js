@@ -22,14 +22,14 @@ export function doRegister(options, navigation){
             url:"register",
             data: options,
             type: "POST",
-            success:function(data){
-                if(data.status==1){
+            success:function(ret){
+                if(ret.status==1 && ret.data.code==1){
                     //跳转到
                     //console.log('注册成功后跳转')
                     alert('注册成功，请登陆！');
                     navigation.navigate('Login');
                 }else{
-                    alert(data.result);
+                    alert(ret.data.msg);
                 }
             },
             error: function(status, text){

@@ -17,28 +17,25 @@ export function handle(data){
 }
 
 //获取章节内容
-export function getBookDetails(options, data){
+export function getBookDetails(options, listdata){
     return dispatch => {
         dispatch(handle({
-            content: "",
             loading: true
         }))
-
+        
         storage.load({
             key: 'bookInfo',
-            id: options.id,
+            id: options.bid,
         }).then(ret => {
 
             ///查询是否有内容
             let tpage = ret.pageList[options.rdPst-1];
-            console.log(options.rdPst)
-            console.log(tpage)
 
             // 如果找到数据，则在then方法中返回
             dispatch(handle({
                 bookName: ret.name,
                 title: tpage.name,
-                bookId: options.id,
+                bookId: options.bid,
                 isAdd: ret.isAdd,
                 chapter: options.rdPst,
                 ptotal: ret.ptotal,
@@ -47,7 +44,6 @@ export function getBookDetails(options, data){
             }))
 
             if(tpage.content!=""){
-                console.log(tpage.content)
                 ////更新阅读的内容
                 dispatch(handle({
                     content: tpage.content,
@@ -64,12 +60,14 @@ export function getBookDetails(options, data){
                 //保存
                 storage.save({
                     key: "bookInfo",
-                    id: options.id,  
+                    id: options.bid,  
                     data: now
+                }).then(ret =>{
+                    //更新在读书籍和书架的视图, 主要是修改阅读的进度
+                    dispatch(bookCase.handle({isUpView: true}))
+                    /////更新章节列表视图，主要是修改是否下载的状态
+                    dispatch(bookChapter.handle({isUpView: true}));
                 });
-
-                //更新在读书籍和书架的视图, 主要是修改阅读的进度
-                dispatch(bookCase.handle({isUpView: true}))
             }else{
                 console.log('开始抓文章内容')
                 Fetch({
@@ -84,9 +82,6 @@ export function getBookDetails(options, data){
                                 content: result.data,
                                 loading: false
                             }));
-                            //不在书架的，不需要保存
-                            //if(!ret.isAdd) return false;
-                            console.log('下面是保存数据了')
                             let now = ret;
                             //把书籍合并到数据库,先取再合
                             now.pageList[options.rdPst-1].content = result.data;
@@ -97,14 +92,14 @@ export function getBookDetails(options, data){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: options.id,  
+                                id: options.bid,  
                                 data: now
-                            });
-                            //更新在读书籍和书架的视图, 主要是修改阅读的进度
-                            dispatch(bookCase.handle({isUpView: true}))
-                            /////更新章节列表视图，主要是修改是否下载的状态
-                            dispatch(bookChapter.handle({isUpView: true}))
-                            
+                            }).then(dd => {
+                                //更新在读书籍和书架的视图, 主要是修改阅读的进度
+                                dispatch(bookCase.handle({isUpView: true}))
+                                /////更新章节列表视图，主要是修改是否下载的状态
+                                dispatch(bookChapter.handle({isUpView: true}));
+                            })
                         }
                     },
                     error:function(result){
@@ -122,24 +117,23 @@ export function getBookDetails(options, data){
                     }
                 })
             };
-            
         }).catch(err => {
             //////没查询到书籍，代表未加入书架,已经废弃，使用临时保存逻辑
             if(err.name != "NotFoundError"){ alert(err.message); return false;}
 
-            let tpage = data.pageList[data.rdPst-1];
+            let tpage = listdata[options.rdPst-1];
             Fetch({
                     url:"bookDetails",
                     type:"GET",
                     //link和charset都单独记录在列表的每一条
-                    data: {name: data.name, link: tpage.link, sourceType: data.sourceTydatae, charset: tpage.charset},
+                    data: {name: "", link: tpage.link, sourceType: options.sourceType, charset: tpage.charset},
                     success:function(result){
                         if(result.status==1){
                             
                             dispatch(handle({
                                 content: result.data,
-                                chapter: data.rdPst,
-                                ptotal: data.ptotal,
+                                chapter: options.rdPst,
+                                ptotal: listdata.length.ptotal,
                                 title: tpage.name,
                                 loading: false
                             }));
@@ -164,17 +158,16 @@ export function getBookDetails(options, data){
 }
 
 //缓存下载
-export function downBook(id, startPost, endPost){
+export function downBook(bid, startPost, endPost){
     console.log(startPost)
     console.log(endPost)
     return dispatch => {
         /*dispatch(handle({
             loading: true
         }))*/
-
         storage.load({
             key: 'bookInfo',
-            id: id,
+            id: bid,
         }).then(ret => {
             let tpage = ret.pageList[0];
 
@@ -221,7 +214,7 @@ export function downBook(id, startPost, endPost){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: id,  
+                                id: bid,  
                                 data: ret
                             });
 
@@ -264,7 +257,7 @@ export function downBook(id, startPost, endPost){
                             //保存
                             storage.save({
                                 key: "bookInfo",
-                                id: id,  
+                                id: bid,  
                                 data: now
                             });
                             

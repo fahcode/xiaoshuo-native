@@ -106,7 +106,7 @@ class Main extends Component {
         })
     }
 
-    _keyExtractor = (item, index) => item.id+index;
+    _keyExtractor = (item, index) => item.qidianid+index;
     //////左侧按钮
     _leftMenu= ()=>{
         let self = this;
@@ -114,7 +114,7 @@ class Main extends Component {
         let lists = this.props.bookClassifyList.types.map(function(ele, index){
             let sty = index==self.props.bookClassifyList.seleIdx? styles.seleMenuItem: styles.menuItem;
             return (
-                <TouchableOpacity style={sty} onPress={()=>self.onMenuSelected(ele)} key={ele.id}>
+                <TouchableOpacity style={sty} onPress={()=>self.onMenuSelected(ele)} key={index}>
                     <Text  style={styles.menuText} >{ele.text}</Text>
                 </TouchableOpacity>
             )
@@ -137,7 +137,7 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=> this._bookInfo(item) }
             >
-                <View key={item.id}  style={styles.bookView}>
+                <View key={item.qidianid}  style={styles.bookView}>
                     <View style={styles.leftImg}>
                         <Text style={styles.brank}>{item.brank}</Text>
                         <Image

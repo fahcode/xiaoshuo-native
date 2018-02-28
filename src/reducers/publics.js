@@ -5,9 +5,13 @@
  */
 const initialSate = {
     isLogin: false,
+    uid: '',
     name:'',
-    loading: false,
+    img: '',
+    loading: true,
     uploading: false,
+    ////来源列表
+    settings: {},
     status: false
 }
 

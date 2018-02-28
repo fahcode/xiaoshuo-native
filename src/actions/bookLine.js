@@ -28,7 +28,7 @@ export function getBookLine(noDele){
                     //////删除残留的临时书籍
                     storage.remove({
                         key: 'bookInfo',
-                        id: ret[i].id
+                        id: ret[i].bid
                     });
                 }
             }
@@ -45,17 +45,17 @@ export function getBookLine(noDele){
 }
 
 //删除在读的书籍,修改isread
-export function delectLineBook(id, tag){
+export function delectLineBook(bid, tag){
     return dispatch => {
         storage.load({
             key: 'bookInfo',
-            id: id
+            id: bid
         }).then(old => {
             var dd = Object.assign({}, old, {isRead: false});
             //保存
             storage.save({
                 key: "bookInfo",
-                id: id,  
+                id: bid,  
                 data: dd
             });
             /////更新在读视图

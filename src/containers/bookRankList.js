@@ -111,7 +111,7 @@ class Main extends Component {
         })
     }
 
-    _keyExtractor = (item, index) => item.id+index;
+    _keyExtractor = (item, index) => item.qidianid+index;
     //////左侧按钮
     _leftMenu= ()=>{
         let self = this;
@@ -143,7 +143,7 @@ class Main extends Component {
                     underlayColor="rgba(34, 26, 38, 0.1)"
                     onPress={()=>{this._bookInfo(item)} }
                 >
-                    <View key={item.id}  style={styles.bookView}>
+                    <View key={item.qidianid}  style={styles.bookView}>
                         <View style={styles.infoTxts}>
                             <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
                             <Text style={styles.author}>作者：{item.author}</Text>
@@ -162,7 +162,7 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=> this._bookInfo(item) }
             >
-                <View key={item.id}  style={styles.bookView}>
+                <View key={item.qidianid}  style={styles.bookView}>
                     <View style={styles.leftImg}>
                         <Text style={styles.brank}>{item.brank}</Text>
                         <Image

@@ -3,10 +3,11 @@
  *
  * 网络请求
  */
+
 //接口域名
 //const host="http://45.124.67.223:3888/";
-//const host="http://112.74.33.167:3888/";
-const host="http://192.168.140.56:3888/";
+const host="http://112.74.33.167:3888/";
+//const host="http://192.168.140.56:3888/";
 //const host="http://192.168.1.111:3888/";
 //接口URL集合
 const urls={
@@ -25,9 +26,10 @@ const urls={
     getClfBookList        : 'getClfBookList',//获取大分类的小列表
     register         : 'register',//注册
     login         : 'login',//登陆
-    logOut        : 'logOut',//退出登陆
+    loginOut        : 'loginOut',//退出登陆
     sendSms       : 'sendSmsCode',//发生短信
-    updateCase      : 'updateCase',//更新书架
+    updateCase      : 'updateCase',//上传书架
+    dldateCase      : 'dldateCase',//下载书架
 };
 
 function Fetch(options){
@@ -108,6 +110,7 @@ function sortKey(data,type){
     let i = 0;
     //上传文件无需KEY
     if(type === "multipart/form-data" || type === "application/json"){
+    //if(type === "multipart/form-data"){
         tempData = data;
     }else{
         for(let key in data){

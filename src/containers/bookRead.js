@@ -21,6 +21,7 @@ import {
 import {connect} from 'react-redux';
 import DeviceBattery from 'react-native-device-battery';
 import Slider from "react-native-slider";
+import KeyEvent from 'react-native-keyevent';
 import * as actions from '../actions/bookRead';
 import readTemplate from '../util/readTemplate';
 
@@ -348,6 +349,7 @@ class Main extends Component {
     }
     //下载
     dlContent=(type)=>{
+        let params = this.props.navigation.state.params;
         //隐藏
         this.props._handle({
             showPop: false,
@@ -358,10 +360,10 @@ class Main extends Component {
             let endPost = type=="after"? this.props.bookRead.ptotal: (this.props.bookRead.chapter+51);
             if(endPost>this.props.bookRead.ptotal) endPost = this.props.bookRead.ptotal;
 
-            this.props._downBook(this.props.navigation.state.params.id, startPost, endPost);
+            this.props._downBook(params.bid, startPost, endPost);
         }else{
             //下载全部内容
-            this.props._downBook(this.props.navigation.state.params.id, 1, this.props.bookRead.ptotal);
+            this.props._downBook(params.bid, 1, this.props.bookRead.ptotal);
         }
     }
     ///记录滚动的位置，在退出的时候保存
@@ -378,7 +380,6 @@ class Main extends Component {
     }
     ///插入内容以后修改位置
     setCtOffset=()=>{
-        console.log('开始修改位置'+this.props.bookRead.ctOffset.y)
         this.refs._scrollView.scrollTo({x: 0, y: this.props.bookRead.ctOffset.y})
     }
 
@@ -417,7 +418,7 @@ class Main extends Component {
                 let data = this.props.navigation.state.params;
                 //this.props.navigation.goBack();
                 this.props.navigation.navigate("BookChapter",{
-                    id: this.props.navigation.state.params.id, 
+                    bid: this.props.navigation.state.params.bid, 
                     data: data
                 })
                 break;
@@ -447,22 +448,24 @@ class Main extends Component {
     getData(chapter){
         let data = {};//this.props.navigation.state.params.data;
         //if(data.isAdd == undefined) data={};
-
+        let params = this.props.navigation.state.params;
         //判断是否是翻页
-        let rdPst = !!chapter? chapter: this.props.navigation.state.params.rdPst;
+        let rdPst = !!chapter? chapter: params.rdPst;
             data.rdPst = rdPst;
 
         this.props._getBookDetails({
-            id: this.props.navigation.state.params.id,
+            bid: params.bid,
+            sourceType: params.sourceType,
+            qidianid: params.qidianid,
+            //link: params.link,
             rdPst: rdPst
-        }, data)
+        }, params.list)
     }
 
     componentWillMount() {
-        
+        this.getData();
     }
     componentDidMount(){
-        this.getData();
         //读取阅读样式设置
         /*if(set.length>0){
             this.props._handle({
@@ -471,7 +474,24 @@ class Main extends Component {
                 lightVal:set[0].lightVal
             })
         }*/
-        
+        // if you want to react to keyDown
+        KeyEvent.onKeyDownListener((keyEvent) => {
+          console.log(`onKeyDown keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+        });
+     
+        // if you want to react to keyUp
+        KeyEvent.onKeyUpListener((keyEvent) => {
+          console.log(`onKeyUp keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+        });
+     
+        // if you want to react to keyMultiple
+        KeyEvent.onKeyMultipleListener((keyEvent) => {
+          console.log(`onKeyMultiple keyCode: ${keyEvent.keyCode}`);
+          console.log(`Action: ${keyEvent.action}`);
+          console.log(`Characters: ${keyEvent.characters}`);
+        });
     }
     //已加载组件收到新的参数时调用
     componentWillReceiveProps(nextProps) {
@@ -484,10 +504,14 @@ class Main extends Component {
             bottomNavModel: 0,
             content:'',
         })
+        let params = this.props.navigation.state.params;
+        ////未加入书架则不保存
+        if(!params.isAdd) return false;
+        console.log(params)
         ///保存位置信息
         storage.load({
             key: 'bookInfo',
-            id: this.props.navigation.state.params.id,
+            id: params.bid,
         }).then(ret => {
             ////没有则保存不保存
             if(!!!this.ctOffset) return false;
@@ -497,9 +521,11 @@ class Main extends Component {
             ///保存位置信息
             storage.save({
                 key: "bookInfo",
-                id: this.props.navigation.state.params.id,  
+                id: params.bid,
                 data: ret
             });
+        }).catch(err => {
+            console.log(err)
         })
     }
     //组件判断是否重新渲染时调用, 控制render
@@ -825,8 +851,8 @@ function mapDispatchToProps(dispatch){
         _getBookDetails:(options, data)=>{
             dispatch(actions.getBookDetails(options, data))
         },
-        _downBook:(id, startPost, endPost)=>{
-            dispatch(actions.downBook(id, startPost, endPost))
+        _downBook:(bid, startPost, endPost)=>{
+            dispatch(actions.downBook(bid, startPost, endPost))
         }
     }
 }

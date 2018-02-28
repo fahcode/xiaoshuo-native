@@ -1,11 +1,17 @@
 rootProject.name = 'xiaoshuo'
-include ':react-native-fs'
-project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
-//include ':realm'
-//project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/android')
-
+include ':react-native-keyevent'
+project(':react-native-keyevent').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-keyevent/android')
 include ':app'
 
 ///react-native-vector-icons
 include ':react-native-vector-icons'
 project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
+
+include ':react-native-cookies'
+project(':react-native-cookies').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-cookies/android')
+
+include ':react-native-fs'
+project(':react-native-fs').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fs/android')
+
+//include ':realm'
+//project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/android')
