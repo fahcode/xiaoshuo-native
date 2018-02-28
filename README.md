@@ -1,5 +1,6 @@
 ## xiaoshuo-native
 react-native 做的小说阅读器
+*功能未完善，但是勉强可以使用了*
 
 1. 首先得配置sdk,最好安装studio，具体配置可以看官网
 
