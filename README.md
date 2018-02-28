@@ -13,7 +13,7 @@ react-native 做的小说阅读器
 > 首先生成key, 具体看官网
 ```cd android && ./gradlew assembleRelease```
 
-*根目录下的xiaoshuo.apk 是可以直接安装使用的*
+*根目录下的app-release.apk 是可以直接安装使用的*
 *注意：手机需要打开开发者模式*
 
 ![Image](/imgs/app1.png)
