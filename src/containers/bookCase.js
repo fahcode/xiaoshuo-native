@@ -19,7 +19,7 @@ import {
 import {connect} from 'react-redux';
 import px from '../util/px';
 
-import * as actions from '../actions/bookCase';
+import * as actions from '../store/actions/bookCase';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ccss from '../util/commoncss';
 
@@ -30,34 +30,33 @@ import ccss from '../util/commoncss';
 **********/
 
 class Main extends Component {
-
-    static navigationOptions = ({ navigation }) => ({
+    /* static navigationOptions = ({ navigation }) => ({
         headerTitle: "",
-        headerStyle:{
+        headerStyle: {
             backgroundColor: "#ffb307",//rgb(46, 173, 208)rgb(255, 99, 120)rgb(102, 163, 147)
-            height: px(Platform.OS === 'ios'?190:130)
+            height: px(Platform.OS === 'ios' ? 190 : 130)
         },
-        headerTitleStyle:{
-            color:'white'
+        headerTitleStyle: {
+            color: 'white'
         },
+        headerBackTitle: null,
         headerLeft: (
-            <TouchableOpacity onPress={ ()=> {navigation.navigate("DrawerMenu")} } >
+            <TouchableOpacity onPress={() => { navigation.navigate("DrawerMenu") }} >
                 <Image
-                   source={require("../images/icons/ic_menu_logo.png")}
-                   style={{width:px(294),height:px(144),marginRight:px(50)}}
+                    source={require("../images/icons/ic_menu_logo.png")}
+                    style={{ width: px(294), height: px(144), marginRight: px(50) }}
                 />
             </TouchableOpacity>
         ),
-        headerRight:(
-            <TouchableOpacity onPress={ ()=> {navigation.navigate("Search")} } >
-                {/*<Icon name="ios-search" size={28} color="#fff" style={{marginRight:px(50)}} />*/}
+        headerRight: (
+            <TouchableOpacity onPress={() => { navigation.navigate("Search") }}>
                 <Image
-                   source={require("../images/search.png")}
-                   style={{width:px(54),height:px(54),marginRight:px(50)}}
+                    source={require("../images/search.png")}
+                    style={{ width: px(54), height: px(54), marginRight: px(50) }}
                 />
             </TouchableOpacity>
-        )
-    })
+        ),
+    }) */
     //将要插入dom
     componentWillMount(){
         //this.props._getBookCase();
@@ -96,8 +95,8 @@ class Main extends Component {
     _addTab = (item)=>{
         console.log(item)
     }
-    _shareBoox = (qidianid)=>{
-        console.log(qidianid)
+    _shareBoox = (bookID)=>{
+        console.log(bookID)
     }
     //删除当前id的书籍
     delectBoox = (item)=>{
@@ -106,7 +105,7 @@ class Main extends Component {
     //显示书籍列表
     _bookRead = (item)=>{
         //this.props.navigation.navigate('BookInfo', {item: item})
-        this.props.navigation.navigate('BookChapter', {bid: item.bid, qidianid: item.qidianid, name: item.name, author: item.author, sourceType: item.sourceType, sort: item.sort, isAdd: item.isAdd})
+        this.props.navigation.navigate('BookChapter', {bid: item.bid, bookID: item.bookID, name: item.name, author: item.author, sourceType: item.sourceType, sort: item.sort, isAdd: item.isAdd})
     }
     //直接进入阅读的章节
    /* _bookRead = (item)=>{
@@ -145,7 +144,7 @@ class Main extends Component {
         };
         //是否显示更新
         let upicon = function(){
-            if(item.ptotal<item.qidian_ptotal){
+            if (item.rdPst<item.ptotal){
                 return(
                     <Image style={styles.upIcon} source={require('../images/icons/reading__shared__bookmark_highlight.png')} resizeMode='cover'
                     />
@@ -188,7 +187,7 @@ class Main extends Component {
                         </View>
                     </View>
                     <View style={styles.control}>
-                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.qidianid)}}>
+                        <TouchableOpacity style={styles.shareIcon} onPress={() => { this._shareBoox(item.bookID)}}>
                             <Image
                                 source={require('../images/icons/bookrack_icon_share.png')}
                                 style={{width: px(38),height: px(41)}}
@@ -206,7 +205,7 @@ class Main extends Component {
             </TouchableHighlight>
         )
     };
-    _keyExtractor = (item, index) => item.bid;
+    _keyExtractor = (item, index) => item.bookID.toString();
     onButtonPress = ()=>{
 
     }

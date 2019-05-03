@@ -40,7 +40,17 @@ class Root extends Component {
     render() {
         return (
             <Provider store={store}>
-	            <AppWithNavigationState />
+                <AppWithNavigationState />
+                {/* <View>
+                    
+                    <Modal
+                        animationType={"fade"}
+                        visible={true}
+                        transparent={true}
+                        onRequestClose={() => { }}
+                    >
+                    </Modal>
+                </View> */}
             </Provider>
         )
     }

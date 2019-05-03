@@ -3,19 +3,21 @@ package com.xiaoshuo;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.github.kevinejohn.keyevent.KeyEventPackage;
-import com.psykar.cookiemanager.CookieManagerPackage;
-import com.rnfs.RNFSPackage;
-//import io.realm.react.RealmReactPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.ninty.system.setting.SystemSettingPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+//import com.github.kevinejohn.keyevent.KeyEventPackage;
+import com.psykar.cookiemanager.CookieManagerPackage;
+import com.rnfs.RNFSPackage;
+//import io.realm.react.RealmReactPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+
 import java.util.Arrays;
 import java.util.List;
-
-import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -29,7 +31,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new KeyEventPackage(),
+            new RNGestureHandlerPackage(),
+              new SystemSettingPackage(),
+          //new KeyEventPackage(),
           new CookieManagerPackage(),
           new RNFSPackage(),
           new VectorIconsPackage()

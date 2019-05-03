@@ -18,7 +18,7 @@ import {
 import {connect} from 'react-redux';
 import px from '../util/px';
 
-import * as actions from '../actions/bookLine';
+import * as actions from '../store/actions/bookLine';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 /************
@@ -108,7 +108,7 @@ class Main extends Component {
     //直接进入阅读的章节
     _bookRead = (item)=>{
         let ops = {
-            qidianid: item.qidianid,
+            bookID: item.bookID,
             name: item.name,
             rdPst: item.rdPst
         }
@@ -122,7 +122,7 @@ class Main extends Component {
         let item = ite.item;
         //是否显示更新,只有起点的长度大于其它源
         let upicon = function(){
-            if(item.ptotal<item.qidian_ptotal){
+            if(item.ptotal<item.book_ptotal){
                 return(
                     <Image style={styles.upIcon} source={require('../images/icons/reading__shared__bookmark_highlight.png')} resizeMode='cover'
                     />

@@ -16,42 +16,16 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import px   from '../util/px';
-import * as actions from '../actions/bookCity';
+import * as actions from '../store/actions/bookCity';
 import Loading from '../components/loading';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import * as search from '../actions/search';
+import * as search from '../store/actions/search';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 class Main extends Component {
-    static navigationOptions = ({navigation}) => ({
-        headerTitle: "",
-        headerStyle:{
-            backgroundColor: "#ffb307",//rgb(46, 173, 208)rgb(255, 99, 120)rgb(102, 163, 147)
-            height: px(Platform.OS === 'ios'?190:130)
-        },
-        headerTitleStyle:{
-            color:'white'
-        },
-        headerLeft: (
-            <TouchableOpacity onPress={ ()=> {navigation.navigate("DrawerMenu")} } >
-                <Image
-                   source={require("../images/icons/ic_menu_logo.png")}
-                   style={{width:px(294),height:px(144),marginRight:px(50)}}
-                />
-            </TouchableOpacity>
-        ),
-        headerBackTitle: null,
-        headerRight:(
-            <TouchableOpacity onPress={()=>{navigation.navigate("Search")}}>
-                <Image
-                   source={require("../images/search.png")}
-                   style={{width:px(54),height:px(54),marginRight:px(50)}}
-                />
-            </TouchableOpacity>
-        ),
-    })
+    
 
     //分类点击,先进入排行页面
     listTab(item){
@@ -100,7 +74,7 @@ class Main extends Component {
        })
     }
 
-    _keyExtractor = (item, index) => item.qidianid+index;
+    _keyExtractor = (item, index) => (item.bookID + index).toString();
 
    _renderItem = ({item})=>{
         //判断是否是标题
@@ -116,7 +90,7 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=>{this._bookInfo(item)} }
             >
-                <View key={item.qidianid}  style={styles.bookView}>
+                <View key={item.bookID}  style={styles.bookView}>
                     <View style={styles.leftImg}>
                         <Text style={styles.bookType} numberOfLines={1}>{item.btype}</Text>
                     </View>
@@ -198,7 +172,7 @@ const styles = StyleSheet.create({
     columnName:{
         fontSize:px(38),
         color:"#666",
-        marginTop:px(16)
+        marginTop:px(12)
     },
     hotWrap:{
         flex: 1,

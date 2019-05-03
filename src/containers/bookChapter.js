@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import px   from '../util/px';
-import * as actions from '../actions/bookChapter';
+import * as actions from '../store/actions/bookChapter';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Setting from '../util/settings';
 
@@ -45,7 +45,7 @@ class Main extends Component {
         this.props.navigation.navigate("BookRead",{
             bid: params.bid,
             list: this.props.bookChapter.list,
-            qidianid: params.qidianid,
+            bookID: params.bookID,
             name: params.name,
             link: params.link,
             isAdd: params.isAdd,
@@ -65,7 +65,7 @@ class Main extends Component {
         }
     }
 
-    _keyExtractor = (item, index) => item.pid;
+    _keyExtractor = (item, index) => item.pid.toString();
 
     //渲染数据
     _renderItem = (item, index, pageRdPst)=>{
@@ -131,7 +131,7 @@ class Main extends Component {
         let params = this.props.navigation.state.params;
         this.props._getChapter({
             bid: params.bid,
-            qidianid: params.qidianid,
+            bookID: params.bookID,
             oldSourceType: params.sourceType,
             sourceType: sourceType,
             sort: sort,
@@ -184,13 +184,12 @@ class Main extends Component {
     render() {
         console.log('章节列表render次数')
         //列表
-        let data = this.props.bookChapter.list,
+        let data = this.props.bookChapter.list || [],
             listLen = data.length==0? 1: data.length;
         let oneListHei = px(120) + 1;
-        //当前阅读的位置,排序不一样，位置也不一样
+        //当前阅读的位置,排序不一样，位置也不一样,从0开始
         let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
-        //this.setState({pageRdPst: rdPst});
-        console.log(this.props)
+
         //当前来源列表,判断init接口是否有数据，有则使用，无则使用本地默认的
         let initSourceList = !!this.props.publics.settings? this.props.publics.settings.sourceList: [],
             sourceList = initSourceList.length>0? initSourceList:Setting.sourceList,
@@ -205,16 +204,16 @@ class Main extends Component {
                         {length: oneListHei, offset: oneListHei * index, index}
                     )}*/}
                 <TouchableOpacity activeOpacity={1} style={styles.sourceType} onPress={ ()=>{this.showSourcePop(true)} } >
-                    <Icon name="ios-list-box-outline" size={40} color="#999" />
+                    <Icon name="ios-list" size={40} color="#999" />
                 </TouchableOpacity>
                 <FlatList
                     ref="sectionList"
                     data={data}
                     keyExtractor={this._keyExtractor}
                     renderItem={({item, index})=>(this._renderItem(item, index, rdPst))}
-                    refreshing={this.props.bookChapter.loading}
+                    refreshing={this.props.bookChapter.loading}s
                     onRefresh={this._onRefresh}
-                    initialNumToRender={100}
+                    initialNumToRender={50}
                     initialScrollIndex={rdPst}
                     getItemLayout={(data, index)=>(
                         {length: oneListHei, offset: oneListHei * index, index}
@@ -233,7 +232,7 @@ class Main extends Component {
                                     activeOpacity={1}
                                     onPress={() => {this.showSourcePop(false)}}
                                 >
-                                    <Icon name="ios-close-outline" size={36} color="#666" />
+                                    <Icon name="ios-close" size={36} color="#666" />
                                 </TouchableOpacity>
                             </View>
                             <View >

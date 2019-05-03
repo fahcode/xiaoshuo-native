@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import px     from '../util/px';
 import {connect} from 'react-redux';
-import * as actions from '../actions/register';
+import * as actions from '../store/actions/register';
 
 class Main extends Component {
     static navigationOptions = {

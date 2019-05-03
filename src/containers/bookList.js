@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import pxToDp   from '../util/px';
-import * as actions from '../actions/bookList';
+import * as actions from '../store/actions/bookList';
 import BookListComponent from '../components/bookList';
 import LoadingComponent  from '../components/loading';
 
@@ -37,16 +37,16 @@ class Main extends Component {
     })
 
     //列表书籍点击
-    listTab(qidianid,name){
-        this.props.navigation.navigate("BookInfo",{name,qidianid})
+    listTab(bookID,name){
+        this.props.navigation.navigate("BookInfo", { name, bookID})
     }
 
-    _keyExtractor = (item, index) => item.bid;
+    _keyExtractor = (item, index) => item.bookID.toString();
 
     //渲染热门推荐书籍数据
     _renderItem = ({item})=>{
         return (
-            <TouchableOpacity onPress={()=>this.listTab(item.qidianid,item.name)}>
+            <TouchableOpacity onPress={() => this.listTab(item.bookID, item.name)}>
                 <BookListComponent data={item} />
             </TouchableOpacity>
         )

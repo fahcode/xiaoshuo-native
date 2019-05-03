@@ -18,13 +18,13 @@ import {
 
 import {connect} from 'react-redux';
 import px   from '../util/px';
-import * as actions from '../actions/bookRankList';
+import * as actions from '../store/actions/bookRankList';
 import Loading from '../components/loading';
 import Icon from 'react-native-vector-icons/Ionicons';
 //左侧栏
 import SideMenu from 'react-native-side-menu';
 
-import * as search from '../actions/search';
+import * as search from '../store/actions/search';
 import Menu from './menu';
 
 class Main extends Component {
@@ -111,7 +111,7 @@ class Main extends Component {
         })
     }
 
-    _keyExtractor = (item, index) => item.qidianid+index;
+    _keyExtractor = (item, index) => (item.bookID+index).toString();
     //////左侧按钮
     _leftMenu= ()=>{
         let self = this;
@@ -143,7 +143,7 @@ class Main extends Component {
                     underlayColor="rgba(34, 26, 38, 0.1)"
                     onPress={()=>{this._bookInfo(item)} }
                 >
-                    <View key={item.qidianid}  style={styles.bookView}>
+                    <View key={item.bookID}  style={styles.bookViewH}>
                         <View style={styles.infoTxts}>
                             <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
                             <Text style={styles.author}>作者：{item.author}</Text>
@@ -162,24 +162,29 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=> this._bookInfo(item) }
             >
-                <View key={item.qidianid}  style={styles.bookView}>
-                    <View style={styles.leftImg}>
-                        <Text style={styles.brank}>{item.brank}</Text>
-                        <Image
-                           source={ item.imgUrl!=""? {uri: item.imgUrl}: (require('../images/book-test.jpg')) }
-                           style={styles.bookImage}
-                         />
+                <View key={item.bookID}  style={styles.bookView}>
+                    <View style={styles.booktop}>
+                        <View style={styles.leftImg}>
+                            <Text style={styles.brank}>{item.brank}</Text>
+                            <Image
+                                source={item.imgUrl != "" ? { uri: item.imgUrl } : (require('../images/book-test.jpg'))}
+                                style={styles.bookImage}
+                            />
+                        </View>
+                        <View style={styles.infoTxts}>
+                            <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
+                            <Text style={styles.author}>作者：{item.author}</Text>
+                            <Text style={styles.nowPage}>{item.nowPage}</Text>
+                            <Text style={styles.nowPage}>{item.nowTime + "   " + item.pageNumbe}</Text>
+                        </View>
+                        <TouchableOpacity style={styles.addBtn} onPress={(e) => this._addBoox(item, e)}>
+                            <Icon name="md-add" size={16} color="#000" />
+                            <Text style={{ fontSize: px(38), marginLeft: 4 }}>书架</Text>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.infoTxts}>
-                        <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
-                        <Text style={styles.author}>作者：{item.author}</Text>
-                        <Text style={styles.nowPage}>{item.nowPage}</Text>
-                        <Text style={styles.nowTime}>{item.nowTime}</Text>
+                    <View style={styles.infoDesc}>
+                        <Text style={styles.nowPage}>{item.desc}</Text>
                     </View>
-                    <TouchableOpacity style={styles.addBtn} onPress={(e)=> this._addBoox(item, e)}>
-                        <Icon name="md-add" size={16} color="#000" />
-                        <Text style={{fontSize: px(38), marginLeft: 4}}>书架</Text>
-                    </TouchableOpacity>
                 </View>
                 
             </TouchableHighlight>
@@ -290,6 +295,16 @@ const styles = StyleSheet.create({
     },
     bookView: {
         position: "relative",
+        borderBottomWidth: 1,
+        borderColor: 'rgba(100, 53, 201, 0.1)',
+        padding: px(20),
+        marginTop: px(50),
+        marginLeft: px(26),
+        marginRight: px(26),
+        backgroundColor: "#fff"
+    },
+    bookViewH: {
+        position: "relative",
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: 'rgba(100, 53, 201, 0.1)',
@@ -297,6 +312,12 @@ const styles = StyleSheet.create({
         marginTop: px(50),
         marginLeft: px(26),
         marginRight: px(26),
+        backgroundColor: "#fff",
+        alignItems: "center",
+    },
+    booktop: {
+        position: "relative",
+        flexDirection: 'row',
         backgroundColor: "#fff",
         alignItems: "center",
     },
@@ -332,6 +353,9 @@ const styles = StyleSheet.create({
         paddingTop: px(10),
         paddingBottom: px(10),
     },
+    infoDesc: {
+        width: "100%"
+    },
     bookName: {
         fontSize:px(48),
         color:"#666",
@@ -352,7 +376,7 @@ const styles = StyleSheet.create({
     nowPage:{
         fontSize: px(30),
     },
-    nowTime:{
+    pageNumbe:{
         fontSize: px(26)
     },
 

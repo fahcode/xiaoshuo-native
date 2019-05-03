@@ -20,7 +20,7 @@ import CookieManager from 'react-native-cookies';
 
 import px     from '../util/px';
 import {connect} from 'react-redux';
-import * as actions from '../actions/login';
+import * as actions from '../store/actions/login';
 
 class Main extends Component {
     static navigationOptions = {

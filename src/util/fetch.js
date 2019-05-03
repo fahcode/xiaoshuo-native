@@ -7,8 +7,7 @@
 //接口域名
 //const host="http://45.124.67.223:3888/";
 const host="http://112.74.33.167:3888/";
-//const host="http://192.168.140.56:3888/";
-//const host="http://192.168.1.111:3888/";
+//const host="http://172.18.4.32:3888/";
 //接口URL集合
 const urls={
     init       : 'init',//获取登陆状态，获取初始化数据
@@ -19,7 +18,7 @@ const urls={
     bookDetails   : 'getBookDetails',//获取章节的内容
     bookAllDetails   : 'getBookAllDetails',//获取章节的内容
     updataBookList      : 'updataBookList',//更新书架
-    downBook      : 'downBook',//下载小说
+    downloadBook      : 'getDownloadBook',//下载小说
     search        : 'searchBook',//搜索小说
     getRanks        : 'getRanks',//获取排行
     getClfMenus        : 'getClfMenus',//获取大分类的小列表
@@ -33,6 +32,7 @@ const urls={
 };
 
 function Fetch(options){
+    
     //请求头部参数
     let sendHeader={
         method: options.type?options.type:"POST",//发送方式
@@ -52,56 +52,68 @@ function Fetch(options){
     }
     console.log(sendUrl);
     console.log(sendHeader);
+    
+    Promise.race([
+        fetch(sendUrl, sendHeader),
+        new Promise(function (resolve, reject) {
+            //默认10s
+            setTimeout(() => reject(new Error('request timeout')), options.timeout || 20000)
+        })])
+        .then((res) => {
+            //请求成功
+            if (res.ok) {
+                //成功返回数据
+                res.json().then(function (data) {
+                    if (data.status == 1) {
+                        if (typeof options.success === "function") { options.success(data) };
+                    } else if (data.status == -1) {
+                        if (typeof options.reset === "function") { options.reset(data) }
+                        alert('站点访问出错，请检查是否可以正常访问！')
+                    } else if (data.status == -2) {
+                        if (typeof options.reset === "function") { options.reset(data) }
+                        alert('站点可以访问，但是抓取不到内容，请检查爬虫规则或者检查站点内容是否ajax异步载入的！')
+                    } else if (data.status == -3) {
+                        if (typeof options.reset === "function") { options.reset(data) }
+                        alert('站点可以访问，爬虫规则也正常，但是没有搜索到此小说！')
+                    } else {
+                        if (typeof options.success === "function") { options.success(data) }
+                    };
+                });
+            } else {
+                //返回错误信息
+                var errText;
+                switch (res.status) {
 
-    fetch(sendUrl,sendHeader).then(function(res) {
-        if (res.ok) {
-            //成功返回数据
-            res.json().then(function(data) {
-                if(data.status == 1){
-                    if(typeof options.success==="function"){options.success(data)};
-                }else if(data.status == -1){
-                    if(typeof options.reset==="function"){options.reset(data)}
-                    alert('站点访问出错，请检查是否可以正常访问！')
-                }else if(data.status == -2){
-                    if(typeof options.reset==="function"){options.reset(data)}
-                    alert('站点可以访问，但是抓取不到内容，请检查爬虫规则或者检查站点内容是否ajax异步载入的！')
-                }else if(data.status == -3){
-                    if(typeof options.reset==="function"){options.reset(data)}
-                    alert('站点可以访问，爬虫规则也正常，但是没有搜索到此小说！')
-                }else{
-                    if(typeof options.success==="function"){options.success(data)}
-                };
-            });
-        } else {
-            //返回错误信息
-            var errText;
-            switch(res.status){
-
-                case 403:
-                    errText="服务器禁止访问,请重新登录试试";
-                    break;
-                case 404:
-                    errText="未找到服务器,请重新登录试试";
-                    break;
-                case 500:
-                    errText="服务器未响应,请重新登录试试";
-                    break;
-                case 503:
-                    errText="服务器不可用,请重新登录试试";
-                    break;
-                case 504:
-                    errText="网关超时,请重新登录试试";
-                    break;
-                default :
-                    errText="异常错误，请重新在试";
-                    break;
+                    case 403:
+                        errText = "服务器禁止访问,请重新登录试试";
+                        break;
+                    case 404:
+                        errText = "未找到服务器,请重新登录试试";
+                        break;
+                    case 500:
+                        errText = "服务器未响应,请重新登录试试";
+                        break;
+                    case 503:
+                        errText = "服务器不可用,请重新登录试试";
+                        break;
+                    case 504:
+                        errText = "网关超时,请重新登录试试";
+                        break;
+                    default:
+                        errText = "异常错误，请重新在试";
+                        break;
+                }
+                if (typeof options.error === "function") { options.error(res.status, errText) };
             }
-            if(typeof options.error==="function"){options.error(res.status,errText)};
-        }
-    }, function(e) {
-        alert("网络异常，请求错误");
-        if(typeof options.error==="function"){options.error(444, e)};
-    });
+        }).catch((err) => {
+            //请求失败
+            if (typeof options.error === "function") { 
+                options.error(err) 
+            } else if (typeof options.reset === "function"){
+                options.reset(data, err)
+            }
+            alert(err || "网络异常，请求错误");
+        });
 }
 
 //对象转换为key=value&key=value

@@ -17,7 +17,7 @@ import CookieManager from "react-native-cookies";
 
 import px from '../util/px';
 import {connect} from 'react-redux';
-import * as actions from '../actions/publics';
+import * as actions from '../store/actions/publics';
 
 class DrawerPage extends Component {
     doState=()=>{
