@@ -1,5 +1,5 @@
 //全部的路由
-import Routers from '../routers/index';
+import Routers from '../../routers/index';
 
 //创建路由的Reducer
 const navReducer = (state, action) => {
