@@ -5,16 +5,14 @@ import React, { Component } from 'react';
 import {
     StyleSheet,
     Image,
-    View,
-    Text,
-    ScrollView
+    Platform,
+    TouchableOpacity
 } from 'react-native';
 import {
-    StackNavigator,
-    TabNavigator,
-    DrawerNavigator,
-    DrawerItems,
-    NavigationActions
+    createAppContainer,
+    createStackNavigator,
+    createBottomTabNavigator,
+    createDrawerNavigator
 } from 'react-navigation';
 //左侧栏
 import SideMenu from 'react-native-side-menu';
@@ -36,11 +34,13 @@ import BookClassifyList   from '../containers/bookClassifyList';//分类列表�
 import BookRankList   from '../containers/bookRankList';//分类排行页
 import DrawerMenu  from '../containers/DrawerMenu';//分类排行页
 import webNavigation  from '../containers/webNavigation';//分类排行页
+import webViews  from '../containers/webViews';//分类排行页
+import Loading  from '../components/loading';//
 
 
 
 ////////主按钮
-const MainTabNavigator = TabNavigator({
+const MainTabNavigator = createBottomTabNavigator({
     /*BookLine: {
         screen: BookLine,
         navigationOptions: {
@@ -58,7 +58,7 @@ const MainTabNavigator = TabNavigator({
             title:"书架",
             tabBarLabel: '书架',
             tabBarIcon: ({focused,tintColor}) => (
-                <Icon name="ios-ionitron" size={28} color={focused?"#ffb307":"#000"}/>
+                <Icon name="ios-bookmarks" size={28} color={focused?"#ffb307":"#000"}/>
             ),
         }
     },
@@ -100,16 +100,44 @@ const MainTabNavigator = TabNavigator({
             marginBottom:px(10),
             fontSize: px(34), // 文字大小
         },
-    },
+    }
 });
 
-
+MainTabNavigator.navigationOptions = ({ navigation}) => ({
+    headerTitle: "",
+    headerStyle: {
+        backgroundColor: "#ffb307",//rgb(46, 173, 208)rgb(255, 99, 120)rgb(102, 163, 147)
+        height: px(Platform.OS === 'ios' ? 190 : 130)
+    },
+    headerTitleStyle: {
+        color: 'white'
+    },
+    headerBackTitle: null,
+    headerLeft: (
+        <TouchableOpacity onPress={() => { navigation.toggleDrawer() }} >
+            {/* navigation.navigate("DrawerMenu") */}
+            <Image
+                source={require("../images/icons/ic_menu_logo.png")}
+                style={{ width: px(294), height: px(144), marginRight: px(50) }}
+            />
+        </TouchableOpacity>
+    ),
+    headerRight: (
+        <TouchableOpacity onPress={() => { navigation.navigate("Search") }} >
+            {/*<Icon name="ios-search" size={28} color="#fff" style={{marginRight:px(50)}} />*/}
+            <Image
+                source={require("../images/search.png")}
+                style={{ width: px(54), height: px(54), marginRight: px(50) }}
+            />
+        </TouchableOpacity>
+    )
+})
 
 
 //全部的screen
-const MainStackNavigator = StackNavigator({
+let MainStackNavigator = createStackNavigator({
     Home: {
-        screen: MainTabNavigator,
+        screen: MainTabNavigator
     },
     BookLine:{
         screen:BookLine
@@ -150,26 +178,51 @@ const MainStackNavigator = StackNavigator({
     BookRankList: {
         screen:BookRankList
     },
+    webNavigation: {
+        screen: webNavigation
+    },
+    webViews: {
+        screen: webViews
+    }
 }, {
     initialRouteName: 'Home', // 默认显示界面
     mode: 'card',
-    headerMode: 'screen'
+    headerMode: 'screen',
+    navigationOptions: {
+        headerStyle: {
+            backgroundColor: "#ffb307",//rgb(46, 173, 208)rgb(255, 99, 120)rgb(102, 163, 147)
+            height: px(Platform.OS === 'ios' ? 190 : 130)
+        },
+        headerTitleStyle: {
+            color: 'white'
+        },
+        headerBackTitle: null
+    }
 });
+
+
 
 //export default MainStackNavigator
 /////通过侧边栏包裹
-export default DrawerNavigator({
-  Home: {
-    screen: MainStackNavigator
-  }
-}, {
-    initialRouteName: 'Home',
-    drawerWidth: px(900),
-    drawerPosition: 'left',
-    title: "",
-    contentComponent: (props) => <DrawerMenu dwData={props} />,
-    drawerBackgroundColor: 'transparent'
-});
+const DrawerNavigator = createDrawerNavigator(
+    {
+        DNHome: {
+            screen: MainStackNavigator
+        }
+    }, {
+        initialRouteName: 'DNHome',
+        drawerWidth: px(900),
+        drawerPosition: 'left',
+        title: "",
+        contentComponent: (props) => <DrawerMenu dwData={props} />,
+        drawerBackgroundColor: 'transparent'
+    }
+)
+//);
+const Apps = createAppContainer(DrawerNavigator)
+
+export default Apps
+
 
 const styles = StyleSheet.create({
     icon:{

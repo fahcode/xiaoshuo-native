@@ -24,24 +24,18 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
-#build/
-#.idea
-#.gradle
-#local.properties
-#*.iml
+build/
+.idea
+.gradle
+.gradle/
+local.properties
+*.iml
 
 # node.js
 #
 node_modules/
 npm-debug.log
 yarn-error.log
-
-#react-native
-#
-react-native/
-app/build/
-dist_
-_dist
 
 # BUCK
 buck-out/
@@ -58,3 +52,6 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+# Bundle artifact
+*.jsbundle

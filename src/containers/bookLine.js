@@ -18,7 +18,7 @@ import {
 import {connect} from 'react-redux';
 import px from '../util/px';
 
-import * as actions from '../actions/bookLine';
+import * as actions from '../store/actions/bookLine';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 /************
@@ -98,17 +98,17 @@ class Main extends Component {
     _addTab = (item)=>{
         console.log(item)
     }
-    _shareBoox = (id)=>{
-        console.log(id)
+    _shareBoox = (bid)=>{
+        console.log(bid)
     }
     //删除当前id的在读列表里面
-    delectLineBook = (id)=>{
-        this.props._delectLineBook(id)
+    delectLineBook = (bid)=>{
+        this.props._delectLineBook(bid)
     }
     //直接进入阅读的章节
     _bookRead = (item)=>{
         let ops = {
-            id: item.id,
+            bookID: item.bookID,
             name: item.name,
             rdPst: item.rdPst
         }
@@ -122,7 +122,7 @@ class Main extends Component {
         let item = ite.item;
         //是否显示更新,只有起点的长度大于其它源
         let upicon = function(){
-            if(item.ptotal<item.qidian_ptotal){
+            if(item.ptotal<item.book_ptotal){
                 return(
                     <Image style={styles.upIcon} source={require('../images/icons/reading__shared__bookmark_highlight.png')} resizeMode='cover'
                     />
@@ -162,13 +162,13 @@ class Main extends Component {
                         
                     </View>
                     <View style={styles.control}>
-                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.id)}}>
+                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.bid)}}>
                             <Image
                                 source={require('../images/icons/bookrack_icon_share.png')}
                                 style={{width: px(38),height: px(41)}}
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>{this.delectLineBook(item.id)}}>
+                        <TouchableOpacity onPress={()=>{this.delectLineBook(item.bid)}}>
                             <Image
                                source={require('../images/icons/bookrack_icon_delete.png')}
                                style={{width: px(44),height: px(44)}}
@@ -180,7 +180,7 @@ class Main extends Component {
             </TouchableHighlight>
         )
     };
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bid;
 
     render() {
         console.log('render在读书架')
@@ -237,8 +237,8 @@ function mapDispatchToProps(dispatch){
         _getBookLine:(noDele)=>{
             dispatch(actions.getBookLine(noDele))
         },
-        _delectLineBook:(id)=>{
-            dispatch(actions.delectLineBook(id))
+        _delectLineBook:(bid)=>{
+            dispatch(actions.delectLineBook(bid))
         }
     }
 }

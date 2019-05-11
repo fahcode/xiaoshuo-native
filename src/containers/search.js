@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import px from '../util/px';
-import * as actions from '../actions/search';
+import * as actions from '../store/actions/search';
 import BookListComponent from '../components/bookList';
 import LoadingComponent  from '../components/loading';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -81,7 +81,7 @@ class Main extends Component {
         }
     }
 
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bookID.toString();
 
     //渲染搜索结果
     _renderItem = ({item})=>{
@@ -90,23 +90,28 @@ class Main extends Component {
                 underlayColor="rgba(34, 26, 38, 0.1)"
                 onPress={()=> this._bookInfo(item) }
             >
-                <View key={item.id}  style={styles.bookView}>
-                    <View style={styles.leftImg}>
-                        <Image
-                           source={ item.imgUrl!=""? {uri: item.imgUrl}: (require('../images/book-test.jpg')) }
-                           style={styles.bookImage}
-                         />
+                <View key={item.bid}  style={styles.bookView}>
+                    <View style={styles.booktop}>
+                        <View style={styles.leftImg}>
+                            <Image
+                            source={ item.imgUrl!=""? {uri: item.imgUrl}: (require('../images/book-test.jpg')) }
+                            style={styles.bookImage}
+                            />
+                        </View>
+                        <View style={styles.infoTxts}>
+                            <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
+                            <Text style={styles.author}>作者：{item.author + " | " + item.bookType + " | " + item.bookState}</Text>
+                            <Text style={styles.nowPage}>{item.nowPage}</Text>
+                            <Text style={styles.nowTime}>{item.nowTime + " | " + item.pageNumbe}</Text>
+                        </View>
+                        <TouchableOpacity style={styles.addBtn} onPress={(e)=> this._addBoox(item, e)}>
+                            <Icon name="md-add" size={16} color="#000" />
+                            <Text style={{fontSize: px(38), marginLeft: 4}}>书架</Text>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.infoTxts}>
-                        <Text style={styles.bookName} numberOfLines={1}>{item.name}</Text>
-                        <Text style={styles.author}>作者：{item.author}</Text>
-                        <Text style={styles.nowPage}>{item.nowPage}</Text>
-                        <Text style={styles.nowTime}>{item.nowTime}</Text>
+                    <View style={styles.infoDesc}>
+                        <Text style={styles.nowPage}>{item.desc}</Text>
                     </View>
-                    <TouchableOpacity style={styles.addBtn} onPress={(e)=> this._addBoox(item, e)}>
-                        <Icon name="md-add" size={16} color="#000" />
-                        <Text style={{fontSize: px(38), marginLeft: 4}}>书架</Text>
-                    </TouchableOpacity>
                 </View>
                 
             </TouchableHighlight>
@@ -117,6 +122,7 @@ class Main extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.search}>
+                    
                     <TextInput
                         placeholder="请输入关键词"
                         maxLength={40}
@@ -171,12 +177,17 @@ const styles = StyleSheet.create({
     },
     bookView: {
         position: "relative",
-        flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: 'rgba(100, 53, 201, 0.1)',
         padding: px(20),
+        marginTop: px(50),
         marginLeft: px(26),
         marginRight: px(26),
+        backgroundColor: "#fff"
+    },
+    booktop: {
+        position: "relative",
+        flexDirection: 'row',
         backgroundColor: "#fff",
         alignItems: "center",
     },
@@ -198,13 +209,16 @@ const styles = StyleSheet.create({
         paddingTop: px(30),
         paddingBottom: px(30),
     },
+    infoDesc: {
+        width: "100%"
+    },
     bookName: {
         fontSize:px(50),
         color:"#666",
         marginBottom:px(8)
     },
     author: {
-
+        fontSize: px(36),
     },
     addBtn: {
         width: px(180),

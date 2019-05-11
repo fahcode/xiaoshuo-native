@@ -17,8 +17,9 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import px   from '../util/px';
-import * as actions from '../actions/bookChapter';
+import * as actions from '../store/actions/bookChapter';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Setting from '../util/settings';
 
 class Main extends Component {
     static navigationOptions = ({navigation}) => ({
@@ -34,42 +35,47 @@ class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            pageRdPst: 1
+            pageRdPst: 0
         }
     }
     
     //列表目录点击,章节里面是记录的pid
-    bookDetail(pid){
-        let data = this.props.navigation.state.params.data;
-
+    bookDetail(pid, index){
+        let params = this.props.navigation.state.params;
         this.props.navigation.navigate("BookRead",{
-            id: this.props.navigation.state.params.id,
-            name: this.props.navigation.state.params.name,
-            rdPst: pid,
-            data: data
+            bid: params.bid,
+            list: this.props.bookChapter.list,
+            bookID: params.bookID,
+            name: params.name,
+            link: params.link,
+            isAdd: params.isAdd,
+            sourceType: params.sourceType,
+            rdPst: pid
         });
-        return false;
+        /////告诉列表进入的位置
+        this.props._handle({
+            rdPst: index
+        })
     }
 
     //下拉刷新
     _onRefresh = ()=>{
         if(!this.props.bookChapter.loading){
-            this.getData(null, this.props.bookChapter.sort, true);
+            this.getData(null, null, true);
         }
     }
 
-    _keyExtractor = (item, index) => item.pid;
+    _keyExtractor = (item, index) => item.pid.toString();
 
     //渲染数据
-    _renderItem = ({item})=>{
-
+    _renderItem = (item, index, pageRdPst)=>{
         let dianColor = (item.content != "")? "red": "#999";
         let name = item.name  + (item.isvip? "--(vip)": "");
         /////当前阅读的位置
-        let listBg = (item.pid == (this.state.pageRdPst+1))? {backgroundColor: '#ffb307'}: {};
+        let listBg = (index == pageRdPst)? {backgroundColor: '#ffb307'}: {};
         return (
-            <TouchableOpacity onPress={()=>{this.bookDetail(item.pid)}}>
-                <View key={item.pid} style={[styles.listView, listBg]}>
+            <TouchableOpacity onPress={()=>{this.bookDetail(item.pid, index)}}>
+                <View key={item.index} style={[styles.listView, listBg]}>
                     <View style={styles.dian}><Icon name="md-bulb" size={20} color={dianColor} /></View>
 
                     <Text style={styles.title}>
@@ -98,7 +104,6 @@ class Main extends Component {
         this.props._handle({
             showPop: visible
         })
-        return false;
     }
     ////切换来源
     sourceTab = (type)=>{
@@ -123,79 +128,75 @@ class Main extends Component {
 
     //请求数据，根据刷新的方式来加载不同请求,这边增加界面选择来源
     getData(sourceType, sort, isupdate){
-        console.log('切换到的来源'+sourceType)
+        let params = this.props.navigation.state.params;
         this.props._getChapter({
-            id: this.props.navigation.state.params.id,
+            bid: params.bid,
+            bookID: params.bookID,
+            oldSourceType: params.sourceType,
             sourceType: sourceType,
             sort: sort,
             isupdate: isupdate
-        }, this.props.navigation.state.params.data)
+        })
     } 
     componentWillMount(){
-
-        let getAllData = async ()=>{
-            //获取默认配置项
-            this.Setting = await storage.load({
-                key: 'Setting'
-            });
-            //设置来源列表
-            this.props._handle({
-                sourceList: this.Setting.sourceList,
-            })
-            
-        }
-        getAllData();
         this.getData();
     }
     componentDidMount() {
-        /*let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
+        //列表
+        /*let data = this.props.bookChapter.list,
+            listLen = data.length==0? 1: data.length;
+        let oneListHei = px(120) + 1;
+        let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
+        console.log('设置到位置')
         console.log(rdPst)
-        this.refs.sectionList.scrollToIndex({animated: true, index: rdPst+1})*/
+        console.log(oneListHei*(rdPst+1))
+        this.refs.sectionList.scrollToOffset({offset: oneListHei*(rdPst+1)})*/
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.bookChapter.isUpView){
-            /////重新抓列表
+            /////重新抓列表，不发请求，只是取列表阅读下载状态
             this.getData()
             this.props._handle({
                 isUpView: false
             })
         }
     }
+    //组件判断是否重新渲染时调用, 控制render
+    shouldComponentUpdate(nextProps, nextState){
+        //console.log('改变'+ JSON.stringify(nextProps.bookChapter));
+        ////////列表长度，排序规则，修改来源,是否显示弹窗改变才会触发。或者每次修改都情况list
+        //list改变， 来源弹窗, list本身比较大，但是loding会增加一次
+        let nextData = nextProps.bookChapter,
+            proData = this.props.bookChapter;
+        return (nextData.list !== proData.list || nextData.loading !== proData.loading || nextData.showPop !== proData.showPop)
+    }
     /////出去的时候清空列表，释放内存占用
     componentWillUnmount(){
 
         this.props._handle({
             list: [],
+            rdPst: 1,
+            showPop: false,
             loading:false
         })
-    }
-    //组件判断是否重新渲染时调用, 控制render
-    shouldComponentUpdate(nextProps, nextState){
-        ////////列表长度，排序规则，修改来源,是否显示弹窗改变才会触发。或者每次修改都情况list
-        //视图主动更新， loding改变， 来源弹窗
-        return (this.props.bookChapter.isUpView || nextProps.bookChapter.loading !== this.props.bookChapter.loading || nextProps.bookChapter.showPop !== this.props.bookChapter.showPop)
     }
 
     render() {
         console.log('章节列表render次数')
         //列表
-        let data = this.props.bookChapter.list,
+        let data = this.props.bookChapter.list || [],
             listLen = data.length==0? 1: data.length;
         let oneListHei = px(120) + 1;
-        //当前阅读的位置,排序不一样，位置也不一样
+        //当前阅读的位置,排序不一样，位置也不一样,从0开始
         let rdPst = this.props.bookChapter.sort=="asc"? (this.props.bookChapter.rdPst-1): (listLen-this.props.bookChapter.rdPst);
-        console.log(rdPst)
-        //this.setState({pageRdPst: rdPst});
-        //console.log('位置：'+rdPst)
 
-        //当前来源列表
-        let sourceList = this.props.bookChapter.sourceList;
-        let showPop = this.props.bookChapter.showPop;
-        
+        //当前来源列表,判断init接口是否有数据，有则使用，无则使用本地默认的
+        let initSourceList = !!this.props.publics.settings? this.props.publics.settings.sourceList: [],
+            sourceList = initSourceList.length>0? initSourceList:Setting.sourceList,
+            showPop = this.props.bookChapter.showPop; 
 
         return (
             <View style={styles.container}>
-                {/*/////切换小说来源*/}
                 {/*
                     initialNumToRender={30}
                 initialScrollIndex={rdPst}
@@ -203,16 +204,16 @@ class Main extends Component {
                         {length: oneListHei, offset: oneListHei * index, index}
                     )}*/}
                 <TouchableOpacity activeOpacity={1} style={styles.sourceType} onPress={ ()=>{this.showSourcePop(true)} } >
-                    <Icon name="ios-list-box-outline" size={40} color="#999" />
+                    <Icon name="ios-list" size={40} color="#999" />
                 </TouchableOpacity>
                 <FlatList
                     ref="sectionList"
                     data={data}
                     keyExtractor={this._keyExtractor}
-                    renderItem={this._renderItem}
-                    refreshing={this.props.bookChapter.loading}
+                    renderItem={({item, index})=>(this._renderItem(item, index, rdPst))}
+                    refreshing={this.props.bookChapter.loading}s
                     onRefresh={this._onRefresh}
-                    
+                    initialNumToRender={50}
                     initialScrollIndex={rdPst}
                     getItemLayout={(data, index)=>(
                         {length: oneListHei, offset: oneListHei * index, index}
@@ -231,7 +232,7 @@ class Main extends Component {
                                     activeOpacity={1}
                                     onPress={() => {this.showSourcePop(false)}}
                                 >
-                                    <Icon name="ios-close-outline" size={36} color="#666" />
+                                    <Icon name="ios-close" size={36} color="#666" />
                                 </TouchableOpacity>
                             </View>
                             <View >
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state){
-    return {bookChapter: state.bookChapter};
+    return {bookChapter: state.bookChapter, publics: state.publics};
 }
 
 

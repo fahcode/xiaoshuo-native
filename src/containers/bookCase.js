@@ -19,7 +19,7 @@ import {
 import {connect} from 'react-redux';
 import px from '../util/px';
 
-import * as actions from '../actions/bookCase';
+import * as actions from '../store/actions/bookCase';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ccss from '../util/commoncss';
 
@@ -30,34 +30,33 @@ import ccss from '../util/commoncss';
 **********/
 
 class Main extends Component {
-
-    static navigationOptions = ({ navigation }) => ({
+    /* static navigationOptions = ({ navigation }) => ({
         headerTitle: "",
-        headerStyle:{
+        headerStyle: {
             backgroundColor: "#ffb307",//rgb(46, 173, 208)rgb(255, 99, 120)rgb(102, 163, 147)
-            height: px(Platform.OS === 'ios'?190:130)
+            height: px(Platform.OS === 'ios' ? 190 : 130)
         },
-        headerTitleStyle:{
-            color:'white'
+        headerTitleStyle: {
+            color: 'white'
         },
+        headerBackTitle: null,
         headerLeft: (
-            <TouchableOpacity onPress={ ()=> {navigation.navigate("DrawerMenu")} } >
+            <TouchableOpacity onPress={() => { navigation.navigate("DrawerMenu") }} >
                 <Image
-                   source={require("../images/icons/ic_menu_logo.png")}
-                   style={{width:px(294),height:px(144),marginRight:px(50)}}
+                    source={require("../images/icons/ic_menu_logo.png")}
+                    style={{ width: px(294), height: px(144), marginRight: px(50) }}
                 />
             </TouchableOpacity>
         ),
-        headerRight:(
-            <TouchableOpacity onPress={ ()=> {navigation.navigate("Search")} } >
-                {/*<Icon name="ios-search" size={28} color="#fff" style={{marginRight:px(50)}} />*/}
+        headerRight: (
+            <TouchableOpacity onPress={() => { navigation.navigate("Search") }}>
                 <Image
-                   source={require("../images/search.png")}
-                   style={{width:px(54),height:px(54),marginRight:px(50)}}
+                    source={require("../images/search.png")}
+                    style={{ width: px(54), height: px(54), marginRight: px(50) }}
                 />
             </TouchableOpacity>
-        )
-    })
+        ),
+    }) */
     //将要插入dom
     componentWillMount(){
         //this.props._getBookCase();
@@ -86,7 +85,6 @@ class Main extends Component {
             this.props._handle({
                 isUpView:false
             })
-            console.log('更新书架');
         }
     }
     //组件判断是否重新渲染时调用
@@ -97,8 +95,8 @@ class Main extends Component {
     _addTab = (item)=>{
         console.log(item)
     }
-    _shareBoox = (id)=>{
-        console.log(id)
+    _shareBoox = (bookID)=>{
+        console.log(bookID)
     }
     //删除当前id的书籍
     delectBoox = (item)=>{
@@ -107,7 +105,7 @@ class Main extends Component {
     //显示书籍列表
     _bookRead = (item)=>{
         //this.props.navigation.navigate('BookInfo', {item: item})
-        this.props.navigation.navigate('BookChapter', {id: item.id, name: item.name, author: item.author, isAdd: item.isAdd})
+        this.props.navigation.navigate('BookChapter', {bid: item.bid, bookID: item.bookID, name: item.name, author: item.author, sourceType: item.sourceType, sort: item.sort, isAdd: item.isAdd})
     }
     //直接进入阅读的章节
    /* _bookRead = (item)=>{
@@ -130,10 +128,10 @@ class Main extends Component {
     _renderItem = (itm)=>{
         var item = itm.item;
         //最后一个的添加组件
-        if(item.id === 'last'){
+        if(item.bid === 'last'){
             return (
                 <TouchableOpacity onPress={()=>{this._addTab(item)}}>
-                    <View key={item.id}  style={styles.bookView}>
+                    <View key={item.bid}  style={styles.bookView}>
                          <View style={styles.last}>
                              <Image
                                source={require('../images/book-add.png')}
@@ -146,7 +144,7 @@ class Main extends Component {
         };
         //是否显示更新
         let upicon = function(){
-            if(item.ptotal<item.qidian_ptotal){
+            if (item.rdPst<item.ptotal){
                 return(
                     <Image style={styles.upIcon} source={require('../images/icons/reading__shared__bookmark_highlight.png')} resizeMode='cover'
                     />
@@ -189,7 +187,7 @@ class Main extends Component {
                         </View>
                     </View>
                     <View style={styles.control}>
-                        <TouchableOpacity style={styles.shareIcon} onPress={()=>{this._shareBoox(item.id)}}>
+                        <TouchableOpacity style={styles.shareIcon} onPress={() => { this._shareBoox(item.bookID)}}>
                             <Image
                                 source={require('../images/icons/bookrack_icon_share.png')}
                                 style={{width: px(38),height: px(41)}}
@@ -207,7 +205,7 @@ class Main extends Component {
             </TouchableHighlight>
         )
     };
-    _keyExtractor = (item, index) => item.id;
+    _keyExtractor = (item, index) => item.bookID.toString();
     onButtonPress = ()=>{
 
     }
@@ -215,7 +213,6 @@ class Main extends Component {
         console.log('书架render次数')
         let list = this.props.bookCase.list,
             isUpdata = this.props.bookCase.isUpdata;
-
         return (
             <View style={styles.container}>
                 <FlatList
