@@ -3,15 +3,15 @@
  *
  * APP首页
  */
-import React, { Component } from 'react';
-import { Provider, connect } from 'react-redux';
-import { addNavigationHelpers } from "react-navigation";
+import React, { Component } from 'react'
+import { Provider, connect } from 'react-redux'
+import { addNavigationHelpers } from "react-navigation"
 //导入全局的storage
 import './util/Storage'
 //全部的Store
-import configureStore from './store/configureStore';
+import configureStore from './store/configureStore'
 //全部的路由
-import Routers from './routers/index';
+import Routers from './routers/index'
 
 
 /*const mapStateToProps = (state) => ({
@@ -56,4 +56,4 @@ class Root extends Component {
     }
 }
 
-export default Root;
+export default Root
