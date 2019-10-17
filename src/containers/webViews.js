@@ -11,9 +11,9 @@ import {
     Image,
     Platform,
     TouchableOpacity,
-    Dimensions,
-    WebView
+    Dimensions
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import px from '../util/px';
 import Icon from 'react-native-vector-icons/Ionicons';
 import webTemplate from '../util/webTemplate';
