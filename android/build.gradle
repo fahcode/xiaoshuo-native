@@ -19,7 +19,16 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-
+/* subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android") && project.name == 'react-native-cookies') {
+            android {
+                compileSdkVersion 28
+                buildToolsVersion "28.0.3"
+            }
+        }
+    }
+} */
 allprojects {
     repositories {
         mavenLocal()
