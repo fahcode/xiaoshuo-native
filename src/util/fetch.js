@@ -6,7 +6,7 @@
 
 //接口域名
 //const host="http://45.124.67.223:3888/";
-const host="http://112.74.33.167:3888/";
+const host="http://47.113.103.79:3888/";
 //const host="http://172.18.4.32:3888/";
 //接口URL集合
 const urls={

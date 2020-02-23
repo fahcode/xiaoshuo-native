@@ -15,7 +15,7 @@ const initialSate = {
     status: false
 }
 
-function Publics(state = initialSate,action){
+function Publics(state = initialSate, action){
     switch (action.type){
         case "PUBLICS_HANDLE":
             return Object.assign({},state,action.data)

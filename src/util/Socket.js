@@ -1,4 +1,4 @@
-const host = "ws://112.74.33.167:3889/";
+const host = "ws://47.113.103.79:3889/";
 //const host = "ws://172.18.4.32:3889/";
 
 const Socket = function(path){
