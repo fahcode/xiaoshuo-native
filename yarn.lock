@@ -5254,11 +5254,6 @@ react-native-cookies@^3.3.0:
   dependencies:
     invariant "^2.1.0"
 
-react-native-device-battery@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-device-battery/-/react-native-device-battery-1.0.0.tgz#3a50f78263fc1e3c8a701bd4aec521e5f86bda3d"
-  integrity sha1-OlD3gmP8HjyKcBvUrsUh5fhr2j0=
-
 react-native-fs@^2.13.3:
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.14.1.tgz#61c70a865b5b5bcb020dd4e4befd60a2c20c836f"
@@ -5342,9 +5337,9 @@ react-native-vector-icons@^5.0.0:
     yargs "^8.0.2"
 
 react-native-webview@^7.4.2:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-7.4.2.tgz#4206ef92c95bcb7207fdade608e5f5a1f62a3f83"
-  integrity sha512-B9cKZCiQniIXlhhDwvd/GUA7HSsSNbFVkRbnvhmGjOrkBPiaK7Omq6t3/KMGxChD3o1qCsohH0Zrm0A7QUvQOg==
+  version "7.6.0"
+  resolved "https://registry.npm.taobao.org/react-native-webview/download/react-native-webview-7.6.0.tgz#6bae76430200be5e5ead7d986af2fa341b650186"
+  integrity sha1-a652QwIAvl5erX2YavL6NBtlAYY=
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

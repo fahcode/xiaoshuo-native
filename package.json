@@ -23,7 +23,6 @@
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.56.0",
     "react-native-cookies": "^3.3.0",
-    "react-native-device-battery": "^1.0.0",
     "react-native-fs": "^2.13.3",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-keyevent": "^0.1.1",
