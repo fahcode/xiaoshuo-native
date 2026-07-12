@@ -31,13 +31,29 @@ jobs:
       - name: 安装 Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: 创建 local.properties
+        run: |
+          echo "sdk.dir=${ANDROID_SDK_ROOT}" > android/local.properties
+          cat android/local.properties
+
+      - name: 检查 gradlew
+        run: |
+          ls -la android/gradlew
+          chmod +x android/gradlew
+
       - name: 构建 Release APK
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
+          exit_code=${PIPESTATUS[0]}
+          if [ $exit_code -ne 0 ]; then
+            echo "=== BUILD FAILED ==="
+            tail -100 build.log
+            exit $exit_code
+          fi
 
       - name: 上传 APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: xiaoshuo-release
