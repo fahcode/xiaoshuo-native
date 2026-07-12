@@ -16,6 +16,7 @@ import bookRankList from './bookRankList';
 import register from './register';
 import publics from './publics';
 import nav from './navReducer';
+import aiConfig from './aiConfig';
 
 ///////合并全部的reducers
 export default combineReducers({
@@ -32,5 +33,6 @@ export default combineReducers({
     bookClassifyList,
     bookRankList,
     publics,
-    nav
+    nav,
+    aiConfig
 })

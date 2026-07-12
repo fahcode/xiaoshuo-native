@@ -35,6 +35,7 @@ import BookRankList   from '../containers/bookRankList';//分类排行页
 import DrawerMenu  from '../containers/DrawerMenu';//分类排行页
 import webNavigation  from '../containers/webNavigation';//分类排行页
 import webViews  from '../containers/webViews';//分类排行页
+import AISettings from '../containers/aiSettings';//AI 配置页
 import Loading  from '../components/loading';//
 
 
@@ -183,6 +184,12 @@ let MainStackNavigator = createStackNavigator({
     },
     webViews: {
         screen: webViews
+    },
+    AISettings: {
+        screen: AISettings,
+        navigationOptions: {
+            title: 'AI 配置'
+        }
     }
 }, {
     initialRouteName: 'Home', // 默认显示界面

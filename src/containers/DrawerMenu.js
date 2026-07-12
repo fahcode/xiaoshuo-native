@@ -212,7 +212,7 @@ class DrawerPage extends Component {
 
                 <View style={styles.funcListBottom}>
                     <View style={styles.fbbox}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => { this.props.dwData.navigation.navigate("AISettings") }}>
                             <View style={styles.iconbox}>
                                 <Image 
                                     source={ require('../images/icons/btn_menu_options_normal.png') } 

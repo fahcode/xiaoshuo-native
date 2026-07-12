@@ -5,9 +5,7 @@
  */
 
 //接口域名
-//const host="http://45.124.67.223:3888/";
-const host="http://47.113.103.79:3888/";
-//const host="http://172.18.4.32:3888/";
+const host="http://23.94.163.5:3888/";
 //接口URL集合
 const urls={
     init       : 'init',//获取登陆状态，获取初始化数据
@@ -29,6 +27,12 @@ const urls={
     sendSms       : 'sendSmsCode',//发生短信
     updateCase      : 'updateCase',//上传书架
     dldateCase      : 'dldateCase',//下载书架
+    // AI 配置
+    aiConfigGet   : 'aiConfig',     // 获取 AI 配置状态
+    aiConfigSet   : 'aiConfig',     // 设置 AI 配置
+    aiDiscover    : 'aiDiscover',   // AI 发现可用源
+    aiGenRule     : 'aiGenRule',    // AI 生成爬取规则
+    aiExtract     : 'aiExtract',    // AI 提取内容
 };
 
 function Fetch(options){
