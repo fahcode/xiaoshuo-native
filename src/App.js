@@ -12,6 +12,9 @@ import './util/Storage'
 import configureStore from './store/configureStore'
 //全部的路由
 import Routers from './routers/index'
+// 服务端配置（启动时刷新 host 缓存）
+import { refreshHost } from './util/fetch'
+import { refreshWsHost } from './util/Socket'
 
 
 /*const mapStateToProps = (state) => ({
@@ -37,20 +40,17 @@ const AppWithNavigationState = Routers;
 const store = configureStore();
 
 class Root extends Component {
+    constructor(props) {
+        super(props);
+        // 启动时从 AsyncStorage 加载最新 host 配置
+        refreshHost();
+        refreshWsHost();
+    }
+
     render() {
         return (
             <Provider store={store}>
                 <AppWithNavigationState />
-                {/* <View>
-                    
-                    <Modal
-                        animationType={"fade"}
-                        visible={true}
-                        transparent={true}
-                        onRequestClose={() => { }}
-                    >
-                    </Modal>
-                </View> */}
             </Provider>
         )
     }

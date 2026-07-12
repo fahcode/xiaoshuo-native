@@ -1,72 +1,98 @@
 /**
- * Created by apple on 2017/7/17.gulp对不使用的js不打包
- *
+ * Created by apple on 2017/7/17.
  * 网络请求
  */
 
-//接口域名
-const host="http://23.94.163.5:3888/";
+import ServerConfig from './serverConfig';
+
 //接口URL集合
 const urls={
-    init       : 'init',//获取登陆状态，获取初始化数据
-    getList       : 'getBookList',//获取小说列表
-    getHot        : 'getHotList',//获取起点首页强推小说
-    bookInfo      : 'getBookInfo',//小说详情
-    getBookList    : 'getBookList',//小说章节目录
-    bookDetails   : 'getBookDetails',//获取章节的内容
-    bookAllDetails   : 'getBookAllDetails',//获取章节的内容
-    updataBookList      : 'updataBookList',//更新书架
-    downloadBook      : 'getDownloadBook',//下载小说
-    search        : 'searchBook',//搜索小说
-    getRanks        : 'getRanks',//获取排行
-    getClfMenus        : 'getClfMenus',//获取大分类的小列表
-    getClfBookList        : 'getClfBookList',//获取大分类的小列表
-    register         : 'register',//注册
-    login         : 'login',//登陆
-    loginOut        : 'loginOut',//退出登陆
-    sendSms       : 'sendSmsCode',//发生短信
-    updateCase      : 'updateCase',//上传书架
-    dldateCase      : 'dldateCase',//下载书架
+    init       : 'init',
+    getList       : 'getBookList',
+    getHot        : 'getHotList',
+    bookInfo      : 'getBookInfo',
+    getBookList    : 'getBookList',
+    bookDetails   : 'getBookDetails',
+    bookAllDetails   : 'getBookAllDetails',
+    updataBookList      : 'updataBookList',
+    downloadBook      : 'getDownloadBook',
+    search        : 'searchBook',
+    getRanks        : 'getRanks',
+    getClfMenus        : 'getClfMenus',
+    getClfBookList        : 'getClfBookList',
+    register         : 'register',
+    login         : 'login',
+    loginOut        : 'loginOut',
+    sendSms       : 'sendSmsCode',
+    updateCase      : 'updateCase',
+    dldateCase      : 'dldateCase',
     // AI 配置
-    aiConfigGet   : 'aiConfig',     // 获取 AI 配置状态
-    aiConfigSet   : 'aiConfig',     // 设置 AI 配置
-    aiDiscover    : 'aiDiscover',   // AI 发现可用源
-    aiGenRule     : 'aiGenRule',    // AI 生成爬取规则
-    aiExtract     : 'aiExtract',    // AI 提取内容
+    aiConfigGet   : 'aiConfig',
+    aiConfigSet   : 'aiConfig',
+    aiDiscover    : 'aiDiscover',
+    aiGenRule     : 'aiGenRule',
+    aiExtract     : 'aiExtract',
 };
 
-function Fetch(options){
-    
+// 默认 host（首次启动未配置时使用）
+let cachedHost = 'http://23.94.163.5:3888/';
+
+/**
+ * 获取当前生效的 HTTP host（异步）
+ */
+async function getHost() {
+    try {
+        return await ServerConfig.getHttpHost() + '/';
+    } catch (e) {
+        return cachedHost;
+    }
+}
+
+/**
+ * 同步获取缓存的 host（用于不需要最新配置的场景）
+ */
+function getHostSync() {
+    return cachedHost;
+}
+
+/**
+ * 刷新 host 缓存（App 启动时调用）
+ */
+async function refreshHost() {
+    cachedHost = await getHost();
+    return cachedHost;
+}
+
+async function Fetch(options){
+    // 动态获取最新 host
+    const host = await getHost();
+
     //请求头部参数
     let sendHeader={
-        method: options.type?options.type:"POST",//发送方式
-        credentials: "include", //带cookie
+        method: options.type?options.type:"POST",
+        credentials: "include",
         headers:options.contentType === "multipart/form-data"?{}:{
             "Content-Type":options.contentType?options.contentType:"application/x-www-form-urlencoded"
-        },//psot请求的内容请求头部格式
-        body:options.data&&options.type!=='GET'?sortKey(options.data,options.contentType):null //发送数据
+        },
+        body:options.data&&options.type!=='GET'?sortKey(options.data,options.contentType):null
     }
 
     //初始化请求
     let sendUrl;
     if(options.type==='GET'){
-        sendUrl=new Request(host+urls[options.url]+'?'+sortKey(options.data,options.contentType));//构造请求资源
+        sendUrl=new Request(host+urls[options.url]+'?'+sortKey(options.data,options.contentType));
     }else{
-        sendUrl=new Request(host+urls[options.url]);//构造请求资源
+        sendUrl=new Request(host+urls[options.url]);
     }
-    console.log(sendUrl);
-    console.log(sendHeader);
+    console.log('Request URL:', sendUrl.url);
     
     Promise.race([
         fetch(sendUrl, sendHeader),
         new Promise(function (resolve, reject) {
-            //默认10s
             setTimeout(() => reject(new Error('request timeout')), options.timeout || 20000)
         })])
         .then((res) => {
-            //请求成功
             if (res.ok) {
-                //成功返回数据
                 res.json().then(function (data) {
                     if (data.status == 1) {
                         if (typeof options.success === "function") { options.success(data) };
@@ -84,37 +110,22 @@ function Fetch(options){
                     };
                 });
             } else {
-                //返回错误信息
                 var errText;
                 switch (res.status) {
-
-                    case 403:
-                        errText = "服务器禁止访问,请重新登录试试";
-                        break;
-                    case 404:
-                        errText = "未找到服务器,请重新登录试试";
-                        break;
-                    case 500:
-                        errText = "服务器未响应,请重新登录试试";
-                        break;
-                    case 503:
-                        errText = "服务器不可用,请重新登录试试";
-                        break;
-                    case 504:
-                        errText = "网关超时,请重新登录试试";
-                        break;
-                    default:
-                        errText = "异常错误，请重新在试";
-                        break;
+                    case 403: errText = "服务器禁止访问,请重新登录试试"; break;
+                    case 404: errText = "未找到服务器,请重新登录试试"; break;
+                    case 500: errText = "服务器未响应,请重新登录试试"; break;
+                    case 503: errText = "服务器不可用,请重新登录试试"; break;
+                    case 504: errText = "网关超时,请重新登录试试"; break;
+                    default: errText = "异常错误，请重新在试"; break;
                 }
                 if (typeof options.error === "function") { options.error(res.status, errText) };
             }
         }).catch((err) => {
-            //请求失败
             if (typeof options.error === "function") { 
                 options.error(err) 
             } else if (typeof options.reset === "function"){
-                options.reset(data, err)
+                options.reset(null, err)
             }
             alert(err || "网络异常，请求错误");
         });
@@ -124,18 +135,16 @@ function Fetch(options){
 function sortKey(data,type){
     let tempData='';
     let i = 0;
-    //上传文件无需KEY
     if(type === "multipart/form-data" || type === "application/json"){
-    //if(type === "multipart/form-data"){
         tempData = data;
     }else{
         for(let key in data){
             i++;
             tempData+= (i==1?'':'&') +key+'='+data[key];
-            
         }
     };
     return tempData;
 }
 
 export default Fetch;
+export { refreshHost, getHostSync };

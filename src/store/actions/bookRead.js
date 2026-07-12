@@ -4,7 +4,7 @@
  * 小说阅读页
  */
 import Fetch from '../../util/fetch';
-import Socket from '../../util/Socket';
+import { SocketSync } from '../../util/Socket';
 
 ///////当前read的props修改会影响的页面
 import * as bookCase from './bookCase';
@@ -186,7 +186,7 @@ export function downloadBook(bid, startPost, endPost){
             }).then(ret => {
                 //原始的章节列表
                 let pageList = ret.pageList;
-                let ws = new Socket('getDownloadBook');
+                let ws = SocketSync('getDownloadBook');
                 ws.onopen = () => {
                     // 打开一个连接
                     for (var i = startPost - 1; i <= (endPost - 1); i++) {

@@ -4,7 +4,7 @@
  * 书架
  */
 import Fetch from '../util/fetch';
-import Socket from '../util/Socket';
+import { SocketSync } from '../util/Socket';
 ///////当前read的props修改会影响的页面
 import * as bookChapter from './bookChapter';
 

@@ -1,30 +1,52 @@
-const host = "ws://23.94.163.5:3889/";
-//const host = "ws://172.18.4.32:3889/";
+import ServerConfig from './serverConfig';
 
-const Socket = function(path){
-    var ws = new WebSocket( host + (path||"") );
-    /* ws.onopen = () => {
-        // 打开一个连接
-        ws.send('something'); // 发送一个消息
-    }; 
+// 默认 WebSocket host
+let cachedWsHost = 'ws://23.94.163.5:3889/';
 
-    ws.onmessage = (e) => {
-        // 接收到了一个消息
-        console.log(e.data);
-    };
-
-    ws.onerror = (e) => {
-        // 发生了一个错误
-        console.log(e.message);
-    };
-
-    ws.onclose = (e) => {
-        // 连接被关闭了
-        console.log(e.code, e.reason);
-    };
-    */
-    return ws;
+/**
+ * 获取当前生效的 WebSocket host
+ */
+async function getWsHost() {
+    try {
+        return await ServerConfig.getWsHost() + '/';
+    } catch (e) {
+        return cachedWsHost;
+    }
 }
 
+/**
+ * 同步获取缓存的 ws host
+ */
+function getWsHostSync() {
+    return cachedWsHost;
+}
+
+/**
+ * 刷新 ws host 缓存
+ */
+async function refreshWsHost() {
+    cachedWsHost = await getWsHost();
+    return cachedWsHost;
+}
+
+/**
+ * 创建 WebSocket 连接
+ * @param {string} path - 路径
+ * @returns {Promise<WebSocket>}
+ */
+const Socket = async function(path) {
+    const host = await getWsHost();
+    var ws = new WebSocket(host + (path || ''));
+    return ws;
+};
+
+/**
+ * 同步创建 WebSocket（使用缓存的 host）
+ */
+const SocketSync = function(path) {
+    var ws = new WebSocket(cachedWsHost + (path || ''));
+    return ws;
+};
 
 export default Socket;
+export { SocketSync, refreshWsHost, getWsHostSync };

@@ -4,7 +4,7 @@
  * 书架
  */
 import Fetch from '../../util/fetch';
-import Socket from '../../util/Socket';
+import { SocketSync } from '../../util/Socket';
 ///////当前read的props修改会影响的页面
 import * as bookChapter from './bookChapter';
 
@@ -53,7 +53,7 @@ export function updataBookCase(){
         // 获取某个key下的所有数据(仅key-id数据)
         storage.getAllDataForKey('bookInfo').then(users => {
 
-            let ws = new Socket('updataBookList');
+            let ws = SocketSync('updataBookList');
             ws.onopen = () => {
                 //过滤非书架
                 let list = users.filter((item)=>(
