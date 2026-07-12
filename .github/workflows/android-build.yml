@@ -2,7 +2,7 @@ name: Android APK Build
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ master, main, develop ]
   workflow_dispatch:   # 支持手动触发
 
 jobs:
